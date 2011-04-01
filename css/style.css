@@ -1,20 +1,21 @@
 /**
-*	RSF Slideshow -- CSS
+*	Really Simple Slideshow -- CSS
 */
 
 #slideshow {
-	background-color: #444;
-	/*background-repeat:no-repeat;*/
-	/*border: 6px solid #444;*/
-	border: 12px solid #d3d7d7;
+	border: 12px solid #444;
+	border-radius: 12px;
+	-webkit-border-radius: 12px;
+	-moz-border-radius: 12px;
+	-khtml-border-radius: 12px;
 	height: 241px;
-	/*margin-bottom: 24px;*/
 	overflow: hidden;
 	position: relative;
-	/*width: 275px;*/
-	width: 438px;
+	width: 638px;
 }
+
 .slide-container {
+	background-color: #444;
 	position: absolute;
 	height: 100%;
 	left: 0;
@@ -22,9 +23,11 @@
 	top: 0;
 	width: 100%;
 }
+
 .slide-container img {
 	position: absolute;
 }
+
 .slide-container .slide-caption {
 	background-color: #000;
 	bottom: 0;
@@ -40,5 +43,9 @@
 	-khtml-opacity: 0.7;      /* khtml, old safari */
 	-moz-opacity: 0.7;       /* mozilla, netscape */
 	opacity: 0.7;           /* fx, safari, opera */
-}/* CSS Document */
+}
+
+.slides {
+	display: none;
+}
 

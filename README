@@ -1,0 +1,13 @@
+Really Simple™ Slideshow
+========================
+
+Yet another slideshow plugin for jQuery! This particular one loads images dynamically, as and when they're required by the slideshow, allowing you to create larger slideshows without having to pre-load all of the images.
+
+Include rsf-slideshow-1.0.js in your document, then initialise a slideshow like this:
+
+$('#my-slidshow-div').rsfSlideshow();
+
+Please see docs for information about adding slides, and the correct HTML markup.
+
+For detailed docs and demos, visit:
+http://reallysimpleworks.com/slideshow
