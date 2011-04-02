@@ -5,7 +5,7 @@
 *	---------------------------------------
 *
 *	Introduction, Demos and Docs:
-* 	http://reallysimpleworks.com/blog/slideshow-jquery-plugin
+* 	http://reallysimpleworks.com/slideshow
 *
 * 	Copyright (c) 2011 Really Simple
 *	http://reallysimpleworks.com
@@ -32,18 +32,17 @@
 *	$('#my-slideshow-div').rsfSlideshow().rsfSlideshow('startShow');
 *
 *	If you're getting slide data from elsewhere and want to 
-*	manually add slides:
+*	manually add slides to the slideshow:
 *
-*	$('#my-slideshow-div').rsfSlideshow();
 *	var slides = Array(
 *		{url: 'http://mydomain.com/images/1.png', caption: 'This is slide number 1'},
 *		{url: 'http://mydomain.com/images/2.png', caption: 'This is slide number 2'},
 *		{url: '/images/3.png', caption: 'This is slide number 3'},
 *	);
-*	$('#my-slideshow-div').rsfSlideshow();
+*	$('#my-slideshow-div').rsfSlideshow({slides: slides});
 *
 *	For more complete docs, visit:
-*	http://reallysimpleworks.com/blog/slideshow-jquery-plugin
+*	http://reallysimpleworks.com/slideshow
 */
 
 
@@ -59,16 +58,15 @@
 		//	Duration of the transition effect in milliseconds
 		transition: 1000,
 		//	The transition effect.
-		effect: {
-			effects: 'fade',
-			iteration: 'random'
-		},
+		effect: 'fade',
 		//	Easing for slide effects (use the easing jQuery plugin for more options)
 		easing: 'swing',
 		//	If true, the slideshow will loop
 		loop: true,
 		//	Start slideshow automatically on initialisation
 		autostart: true,
+		//	Slides to add to the slideshow
+		slides: Array(),
 		//	Class of the div containing the slide image and caption
 		slide_container_class: 'slide-container',
 		//	jQuery selector for the element containing slide data when using markup to pass data.
@@ -83,7 +81,9 @@
 		//	jQuery selector for each caption data element
 		caption_data_selector: 'span.caption',
 		//	jQuery selector for each link URL data element
-		link_url_data_selector: 'span.link_url'
+		link_url_data_selector: 'span.link_url',
+		//	jQuery selector for each effect data element
+		effect_data_selector: 'span.effect'
 	};
 		
 		
@@ -95,37 +95,43 @@
 		*	default parameters in the 'defaults' object above
 		*/
 		
-		init: function(options) {					  
-			var $this = $(this),
-				data = $this.data('rsf_slideshow'),
-				slides = Array(),
-				this_slide = 0,
-				effect_iterator = {
-					this_effect: -1,
-					direction: 1
+		init: function(options) {	
+			return this.each(function() {
+				var $this = $(this),
+					data = $this.data('rsf_slideshow'),
+					slides = Array(),
+					this_slide = 0,
+					effect_iterator = {
+						this_effect: -1,
+						direction: 1
+					}
+					
+				if (!data) {
+					var settings = $.extend(true, {}, defaults);
+					if (typeof options === 'object') {
+						$.extend(true, settings, options);
+					};
+					$(this).data('rsf_slideshow', {
+						slides: slides,
+						this_slide: this_slide,
+						effect_iterator: effect_iterator,
+						settings: settings,
+						interval_id: false
+					});	
 				}
 				
-			if (!data) {
-				var settings = defaults;
-				if (typeof options === 'object') {
-					$.extend(settings, options);
-				};
-				$(this).data('rsf_slideshow', {
-					slides: slides,
-					this_slide: this_slide,
-					effect_iterator: effect_iterator,
-					settings: settings,
-					interval_id: false
-				});	
-			}
-			
-			$(this).rsfSlideshow('getSlidesFromMarkup');
-			
-			if ($(this).data('rsf_slideshow').settings.autostart) {
-				$(this).rsfSlideshow('startShow');
-			}
-			
-			return this;
+				
+				$(this).rsfSlideshow('getSlidesFromMarkup');
+				
+				if (settings.slides.length) {
+					$(this).rsfSlideshow('addSlides', settings.slides);
+					settings.slides = Array();
+				}
+				
+				if ($(this).data('rsf_slideshow').settings.autostart) {
+					$(this).rsfSlideshow('startShow');
+				}
+			});
 		},
 		
 		
@@ -183,6 +189,31 @@
 		},
 		
 		
+		/**
+		*	Return the array key of the current slide
+		*	The first slide's key is 0.
+		*/
+		
+		currentSlideKey: function() {
+			var data = this.data('rsf_slideshow');
+			return data.this_slide;
+		},
+		
+		
+		/**
+		*	Return the total number of slides currently in the slideshow
+		*/
+		
+		totalSlides: function() {
+			var data = this.data('rsf_slideshow');
+			return data.slides.length;
+		},
+		
+		
+		/**
+		*	Find slide data in the markup and add to the slides array
+		*/
+		
 		getSlidesFromMarkup: function(options) {
 			var data = this.data('rsf_slideshow');
 			if (!options) {
@@ -214,13 +245,17 @@
 			if (!options.link_url_selector) {
 				options.link_url_selector = data.settings.link_url_data_selector;
 			}
+			if (!options.effect_selector) {
+				options.effect_selector = data.settings.effect_data_selector;
+			}
 			
 			var self = this;
 			$cntnr.children(options.slide_selector).each(function() {
 				slide = {
 					url: $(this).children(options.url_selector).text(),
 					caption: $(this).children(options.caption_selector).text(),
-					link_url: $(this).children(options.link_url_selector).text()
+					link_url: $(this).children(options.link_url_selector).text(),
+					effect: $(this).children(options.effect_selector).text()
 				};
 				$(self).rsfSlideshow('addSlides', slide);
 			});
@@ -231,7 +266,7 @@
 		
 		/**
 		*	Private method for adding a single slide object
-		*	to the slides array. This should not be directly
+		*	to the slides array. This should not be used directly
 		*	as the addSlides() method should be used instead.
 		*/
 		
@@ -263,6 +298,7 @@
 			var data = this.data('rsf_slideshow');
 			data.this_slide ++;
 			if (data.this_slide >= data.slides.length) {
+
 				if (data.settings.loop) {
 					data.this_slide = 0;
 				}
@@ -335,22 +371,8 @@
 				var height = img.height;
 				var leftOffset = Math.ceil((containerWidth / 2) - (width / 2));
 				var topOffset = Math.ceil((containerHeight / 2) - (height / 2));
-				if (leftOffset > 0) {
-					$(img).css({
-						borderLeft: leftOffset + 'px solid ' + data.settings.bgcolor, 
-						borderRight: leftOffset + 'px solid ' + data.settings.bgcolor});
-				}
-				else {
-					$(img).css({left: leftOffset + 'px'});
-				}
-				if (topOffset > 0) {
-					$(img).css({
-						borderTop: topOffset + 'px solid ' + data.settings.bgcolor, 
-						borderBottom: topOffset + 'px solid ' + data.settings.bgcolor});
-				}
-				else {
-					$(img).css({top: topOffset + 'px'});
-				}
+				$(img).css({left: leftOffset});
+				$(img).css({top: topOffset});
 				if (slide.link_url) {
 					var $img = $('<a href="' + slide.link_url + '"></a>').append($(img));
 				}
@@ -379,13 +401,12 @@
 		*/
 		
 		transitionWith: function($slide, effect) {
-			
 			var data = this.data('rsf_slideshow');
 			var $previousSlide 
 				= this.children('div.' + data.settings.slide_container_class + ':first');
 			
 			var effect_iteration = 'random';
-			if (typeof effect === 'object' && effect.iteration && effect.effects instanceof Array) {
+			if (typeof effect === 'object' && effect.iteration && effect.effects) {
 				effect_iteration = effect.iteration;
 				effect = effect.effects;
 			}
@@ -415,7 +436,7 @@
 				}
 				effect = effect[data.effect_iterator.this_effect];
 			}
-			
+		
 			switch (effect) {
 				case 'none': 
 					$slide.css('display', 'block');
