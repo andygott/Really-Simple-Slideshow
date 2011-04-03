@@ -116,7 +116,8 @@
 						this_slide: this_slide,
 						effect_iterator: effect_iterator,
 						settings: settings,
-						interval_id: false
+						interval_id: false,
+						loaded_imgs: Array()
 					});	
 				}
 				
@@ -363,8 +364,11 @@
 			newImg.src = slide.url;
 			var $this = this;
 			
-			$(newImg).load(function() {
-				var img = this;
+			var whenLoaded = function(img) {
+				if ($.inArray(slide.url, data.loaded_imgs) < 0) {
+					data.loaded_imgs.push(slide.url);
+				}
+				//var img = this;
 				$(img).addClass('rsf-slideshow-image');
 				//	Set borders and offsets
 				var width = img.width;
@@ -390,7 +394,17 @@
 				}
 				$slideEl.appendTo($this);
 				$this.rsfSlideshow('transitionWith', $slideEl, effect);
-			});
+				return true;
+			};
+			
+			if ($.inArray(slide.url, data.loaded_imgs) < 0) {
+				newImg.src = '';
+				$(newImg).bind('load', function() {whenLoaded(newImg); });
+				newImg.src = slide.url;
+			}
+			else {
+				whenLoaded(newImg);
+			}
 			
 			return this;
 		},
