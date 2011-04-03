@@ -486,7 +486,6 @@
 		*/
 		
 		_doSlide: function($slide, $previousSlide, left_offset, top_offset) {
-			
 			var data = this.data('rsf_slideshow');
 			$slide.css({top: top_offset, left: left_offset});
 			$slide.css('display', 'block');
