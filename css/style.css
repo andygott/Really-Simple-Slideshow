@@ -73,3 +73,11 @@
 .no-js .rs-slideshow .slides li {
 	margin: 0;
 }
+
+
+
+
+#callback-messages {
+	margin: 48px auto;
+	width: 620px;
+}

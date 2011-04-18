@@ -113,7 +113,8 @@
 						settings: settings,
 						interval_id: false,
 						loaded_imgs: Array(),
-						queued: 0
+						queued: 0,
+						callbacks: {}
 					});	
 				}
 				
@@ -363,6 +364,7 @@
 			if (!queue_id) {
 				data.queued += 1;
 				queue_id = data.queued;
+				this.rsfSlideshow('_doCallbacks', 'preTransition');
 			}
 			else if (queue_id != data.queued) {
 				return;
@@ -384,6 +386,7 @@
 				if ($.inArray(slide.url, data.loaded_imgs) < 0) {
 					data.loaded_imgs.push(slide.url);
 				}
+				$this.rsfSlideshow('_doCallbacks', 'imageReady');
 				$(img).addClass('rsf-slideshow-image');
 				var leftOffset = Math.ceil((containerWidth / 2) - (width / 2));
 				var topOffset = Math.ceil((containerHeight / 2) - (height / 2));
@@ -434,6 +437,7 @@
 		
 		transitionWith: function($slide, effect) {
 			var data = this.data('rsf_slideshow');
+			var $this = this;
 			var $previousSlide 
 				= this.children('div.' + data.settings.slide_container_class + ':first');
 			
@@ -472,11 +476,11 @@
 			switch (effect) {
 				case 'none': 
 					$slide.css('display', 'block');
-					$previousSlide.remove();
+					$this.rsfSlideshow('_endTransition');
 					break;
 				case 'fade': 
 					$slide.fadeIn(data.settings.transition, function() {
-						$previousSlide.remove();
+						$this.rsfSlideshow('_endTransition');
 					});
 					break;
 				case 'slideLeft': 
@@ -500,11 +504,29 @@
 		
 		
 		/**
+		*	Anything that needs to be done after a transition ends
+		*/
+		
+		_endTransition: function() {
+			var data = this.data('rsf_slideshow');
+			this.children('div.' + data.settings.slide_container_class + ':not(:last-child)').remove();
+			this.rsfSlideshow('_doCallbacks', 'postTransition');
+			if (this.rsfSlideshow('currentSlideKey') == this.rsfSlideshow('totalSlides') - 1) {
+				this.rsfSlideshow('_doCallbacks', 'lastSlide');
+			}
+			else if (this.rsfSlideshow('currentSlideKey') == 0) {
+				this.rsfSlideshow('_doCallbacks', 'firstSlide');
+			}
+		},
+		
+		
+		/**
 		*	Perform slide animation
 		*/
 		
 		_doSlide: function($slide, $previousSlide, left_offset, top_offset) {
 			var data = this.data('rsf_slideshow');
+			var $this = this;
 			$slide.css({top: top_offset, left: left_offset});
 			$slide.css('display', 'block');
 			
@@ -513,7 +535,7 @@
 				data.settings.transition, 
 				data.settings.easing, 
 				function() {
-					$previousSlide.remove();																	
+					$this.rsfSlideshow('_endTransition');																	
 				}
 			);
 			
@@ -522,6 +544,51 @@
 				data.settings.transition, 
 				data.settings.easing
 			);
+		},
+		
+		
+		/**
+		*	Add a callback to a slideshow event
+		*	Supported events:
+		*		'preTransition'
+		*		'postTransition'
+		*		'imageReady'
+		*		'lastSlide'
+		*		'firstSlide'
+		*/
+		
+		addCallback: function(evnt, callback) {
+			var data = this.data('rsf_slideshow');
+			var events = Array(
+				'preTransition',
+				'postTransition',
+				'imageReady',
+				'lastSlide',
+				'firstSlide'
+			);
+			if ($.inArray(evnt, events) < 0) {
+				return false;
+			}
+			if (!data.callbacks[evnt]) {
+				data.callbacks[evnt] = Array();
+			}
+			data.callbacks[evnt].push(callback);
+			return this;
+		},
+		
+		
+		/**
+		*	Private method for firing callbacks
+		*/
+		
+		_doCallbacks: function(evnt) {
+			var data = this.data('rsf_slideshow');
+			if (!data.callbacks[evnt] || !data.callbacks[evnt].length) {
+				return;
+			}
+			for (var i = 0, len = data.callbacks[evnt].length; i < len; i ++) {
+				data.callbacks[evnt][i](data.slides[data.this_slide]);
+			}
 		}
 		
 	};
