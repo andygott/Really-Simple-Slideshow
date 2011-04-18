@@ -11,8 +11,8 @@
 *	http://reallysimpleworks.com
 *
 * 	Licensed under the MIT license:
-*   http://www.opensource.org/licenses/mit-license.php
-*   Free to use for both commercial and non-commercial.
+*	http://www.opensource.org/licenses/mit-license.php
+*	Free to use for both commercial and non-commercial.
 */
 
 
