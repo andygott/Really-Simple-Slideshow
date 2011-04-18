@@ -1,20 +1,21 @@
 /**
-*	Really Simple Slideshow -- CSS
+*	Really Simple™ Slideshow -- CSS
 */
 
-.slideshow {
+.rs-slideshow {
 	border: 12px solid #444;
 	border-radius: 12px;
 	-webkit-border-radius: 12px;
 	-moz-border-radius: 12px;
 	-khtml-border-radius: 12px;
-	height: 241px;
+	height: 240px;
+	margin: 24px auto;
 	overflow: hidden;
 	position: relative;
 	width: 620px;
 }
 
-.slide-container {
+.rs-slideshow .slide-container {
 	background-color: #444;
 	position: absolute;
 	height: 100%;
@@ -24,11 +25,11 @@
 	width: 100%;
 }
 
-.slide-container img {
+.rs-slideshow .slide-container img {
 	position: absolute;
 }
 
-.slide-container .slide-caption {
+.rs-slideshow .slide-container .slide-caption {
 	background-color: #000;
 	bottom: 0;
 	color: #fff;
@@ -45,8 +46,30 @@
 	opacity: 0.7;           /* fx, safari, opera */
 }
 
-.slides {
+.rs-slideshow .slides {
 	display: none;
 }
 
 
+/**
+*	These rules make the list of links to slide images visible to users
+*	who don't have JavaScript enabled. By adding the 'no-js' class to 
+*	the HTML element, and using Modernizr to remove this class for JS
+*	users, we can style for both scenarios.
+*	http://www.modernizr.com/
+*/
+
+.no-js .rs-slideshow {
+	height: auto;
+}
+.no-js .rs-slideshow .slide-container, 
+.no-js .rs-slideshow .slide-container img {
+	position: relative;
+}
+.no-js .rs-slideshow .slides {
+	display: block;
+	margin: 24px 48px;
+}
+.no-js .rs-slideshow .slides li {
+	margin: 0;
+}

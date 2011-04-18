@@ -79,16 +79,6 @@
 			link_to: {selector: 'a', attr: 'data-link-to'},
 			effect: {selector: 'a', attr: 'data-effect'}
 		}
-		
-		
-		//	jQuery selector for each URL data element
-		//url_data_selector: 'span.url',
-		//	jQuery selector for each caption data element
-		//caption_data_selector: 'span.caption',
-		//	jQuery selector for each link URL data element
-		//link_url_data_selector: 'span.link_url',
-		//	jQuery selector for each effect data element
-		//effect_data_selector: 'span.effect'
 	};
 		
 		
@@ -122,7 +112,8 @@
 						effect_iterator: effect_iterator,
 						settings: settings,
 						interval_id: false,
-						loaded_imgs: Array()
+						loaded_imgs: Array(),
+						queued: 0
 					});	
 				}
 				
@@ -133,11 +124,6 @@
 					$(this).rsfSlideshow('addSlides', settings.slides);
 					settings.slides = Array();
 				}
-				
-				/*$initImg = $('div .' + settings.slide_container_class + ' img');
-				if ($initImg.length) {
-					
-				}*/
 				
 				if ($(this).data('rsf_slideshow').settings.autostart) {
 					$(this).rsfSlideshow('startShow');
@@ -372,8 +358,15 @@
 		*	slide object
 		*/
 	
-		showSlide: function(slide) {
+		showSlide: function(slide, queue_id) {
 			var data = this.data('rsf_slideshow');
+			if (!queue_id) {
+				data.queued += 1;
+				queue_id = data.queued;
+			}
+			else if (queue_id != data.queued) {
+				return;
+			}
 			var containerWidth = this.width();
 			var containerHeight = this.height();
 			this.children('img:first').css('z-index', 0);
@@ -382,12 +375,16 @@
 			var $this = this;
 			
 			var whenLoaded = function(img) {
+				var width = img.width;
+				var height = img.height;
+				if (!width || !height) {
+					setTimeout(function() {$this.rsfSlideshow('showSlide', slide, queue_id); }, 200);
+					return;
+				}
 				if ($.inArray(slide.url, data.loaded_imgs) < 0) {
 					data.loaded_imgs.push(slide.url);
 				}
 				$(img).addClass('rsf-slideshow-image');
-				var width = img.width;
-				var height = img.height;
 				var leftOffset = Math.ceil((containerWidth / 2) - (width / 2));
 				var topOffset = Math.ceil((containerHeight / 2) - (height / 2));
 				$(img).css({left: leftOffset});
