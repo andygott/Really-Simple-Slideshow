@@ -1,24 +1,18 @@
 /**
-* 	RSF Slideshow jQuery plug-in 1.0
-*	---------------------------------------
-*	A Really Simple jQuery Slideshow Plugin
-*	---------------------------------------
+* 	Really Simple™ Slideshow jQuery plug-in 1.1
+*	---------------------------------------------------------
+*	Load slideshow images dynamically, instead of all at once
+*	---------------------------------------------------------
 *
-*	Introduction, Demos and Docs:
+*	Introduction, Demos, Docs and Downloads:
 * 	http://reallysimpleworks.com/slideshow
 *
 * 	Copyright (c) 2011 Really Simple
 *	http://reallysimpleworks.com
 *
-* 	Dual licensed under the MIT and GPL licenses:
+* 	Licensed under the MIT license:
 *   http://www.opensource.org/licenses/mit-license.php
-*   http://www.gnu.org/licenses/gpl.html
-*
-*	Feel free to do whatever you like with this code:
-*	Use it to sure up that crooked table;
-*	Use it to flavour curry sauce;
-*	Use it as an underwater adhesive;
-*	Etc.
+*   Free to use for both commercial and non-commercial.
 */
 
 
@@ -29,7 +23,7 @@
 *	If embedding slide data in your markup, you can initialise
 *	and start a slideshow in one line of code:
 *
-*	$('#my-slideshow-div').rsfSlideshow().rsfSlideshow('startShow');
+*	$('#my-slideshow-div').rsfSlideshow();
 *
 *	If you're getting slide data from elsewhere and want to 
 *	manually add slides to the slideshow:
@@ -69,21 +63,32 @@
 		slides: Array(),
 		//	Class of the div containing the slide image and caption
 		slide_container_class: 'slide-container',
+		//	Class to add to slide caption <span>
+		slide_caption_class: 'slide-caption',
 		//	jQuery selector for the element containing slide data when using markup to pass data.
 		//	If this is an ID (starts with '#') the element can be placed anywhere on the page, 
 		//	Any other selector is assumed to be a child of the slideshow element.
-		//	anywhere on the page
-		data_container_selector: '.slides',
+		data_container: 'ol.slides',
 		//	jQuery selector for each slide data element
-		slide_data_selector: 'div.slide',
+		slide_data_container: 'li',
+		//	Objects containing selection routes for slide attributes
+		//	One or both of 'selector' and/or 'attr' must be present
+		slide_data_selectors: {
+			url: {selector: 'a', attr: 'href'},
+			caption: {selector: 'a', attr: 'title'},
+			link_to: {selector: 'a', attr: 'data-link-to'},
+			effect: {selector: 'a', attr: 'data-effect'}
+		}
+		
+		
 		//	jQuery selector for each URL data element
-		url_data_selector: 'span.url',
+		//url_data_selector: 'span.url',
 		//	jQuery selector for each caption data element
-		caption_data_selector: 'span.caption',
+		//caption_data_selector: 'span.caption',
 		//	jQuery selector for each link URL data element
-		link_url_data_selector: 'span.link_url',
+		//link_url_data_selector: 'span.link_url',
 		//	jQuery selector for each effect data element
-		effect_data_selector: 'span.effect'
+		//effect_data_selector: 'span.effect'
 	};
 		
 		
@@ -128,6 +133,11 @@
 					$(this).rsfSlideshow('addSlides', settings.slides);
 					settings.slides = Array();
 				}
+				
+				/*$initImg = $('div .' + settings.slide_container_class + ' img');
+				if ($initImg.length) {
+					
+				}*/
 				
 				if ($(this).data('rsf_slideshow').settings.autostart) {
 					$(this).rsfSlideshow('startShow');
@@ -221,47 +231,59 @@
 				options = {};
 			}
 			//	Find the containing element
-			if (!options.container) {
-				options.container = data.settings.data_container_selector;
+			if (!options.data_container) {
+				options.data_container = data.settings.data_container;
 			}
-			if (options.container.charAt(0) === '#') {
-				var $cntnr = $(options.container);
+			if (options.data_container.charAt(0) === '#') {
+				var $cntnr = $(options.data_container);
 			}
 			else {
-				var $cntnr = $(this).children(options.container);
+				var $cntnr = $(this).children(options.data_container);
 			}
 			if (!$cntnr.length) {
 				return false;
 			}
 			
-			if (!options.slide_selector) {
-				options.slide_selector = data.settings.slide_data_selector;
+			if (!options.slide_data_container) {
+				options.slide_data_container = data.settings.slide_data_container;
 			}
-			if (!options.url_selector) {
-				options.url_selector = data.settings.url_data_selector;
+			var slide_data_selectors = $.extend(true, {}, data.settings.slide_data_selectors);
+			if (options.slide_data_selectors) {
+				$.extend(true, slide_data_selectors, options.slide_data_selectors);
 			}
-			if (!options.caption_selector) {
-				options.caption_selector = data.settings.caption_data_selector;
-			}
-			if (!options.link_url_selector) {
-				options.link_url_selector = data.settings.link_url_data_selector;
-			}
-			if (!options.effect_selector) {
-				options.effect_selector = data.settings.effect_data_selector;
-			}
+			options.slide_data_selectors = slide_data_selectors;
 			
 			var self = this;
-			$cntnr.children(options.slide_selector).each(function() {
-				slide = {
-					url: $(this).children(options.url_selector).text(),
-					caption: $(this).children(options.caption_selector).text(),
-					link_url: $(this).children(options.link_url_selector).text(),
-					effect: $(this).children(options.effect_selector).text()
-				};
+			$cntnr.children(options.slide_data_container).each(function() {
+				var slide = $(self).rsfSlideshow('_findData', $(this), options.slide_data_selectors);
 				$(self).rsfSlideshow('addSlides', slide);
 			});
-			
 			return this;
+		},
+		
+		
+		/**
+		*	Private method for iterating through data selectors 
+		*	to find data for a single slide
+		*/
+		
+		_findData: function($slideData, slide_data_selectors) {
+			var slide = {};
+			var slide_attr;
+			for (var key in slide_data_selectors) {
+				var $slideDataClone = $.extend(true, {}, $slideData);
+				if (slide_data_selectors[key].selector) {
+					$slideDataClone = $slideDataClone.children(slide_data_selectors[key].selector);
+				}
+				if (slide_data_selectors[key].attr) {
+					slide_attr = $slideDataClone.attr(slide_data_selectors[key].attr);
+				}
+				else {
+					slide_attr = $slideDataClone.text();
+				}
+				slide[key] = slide_attr;
+			}
+			return slide;
 		},
 		
 		
@@ -275,18 +297,13 @@
 			var data = this.data('rsf_slideshow');
 			if ((typeof slide) == 'string') {
 				url = $.trim(slide);
-				data.slides.push({url: url, caption: false, link_url: false});
+				data.slides.push({url: url});
 			}
 			else if (slide.url) {
-				if (!slide.caption) {
-					slide.caption = false;	
+				for (var key in slide) {
+					slide[key] = $.trim(slide[key]);	
 				}
-				if (!slide.link_url) {
-					slide.link_url = false;	
-				}
-				slide.url = $.trim(slide.url);
-				slide.link_url = $.trim(slide.link_url);
-				data.slides.push({url: slide.url, caption: slide.caption, link_url: slide.link_url});
+				data.slides.push(slide);
 			}
 		},
 		
@@ -368,24 +385,25 @@
 				if ($.inArray(slide.url, data.loaded_imgs) < 0) {
 					data.loaded_imgs.push(slide.url);
 				}
-				//var img = this;
 				$(img).addClass('rsf-slideshow-image');
-				//	Set borders and offsets
 				var width = img.width;
 				var height = img.height;
 				var leftOffset = Math.ceil((containerWidth / 2) - (width / 2));
 				var topOffset = Math.ceil((containerHeight / 2) - (height / 2));
 				$(img).css({left: leftOffset});
 				$(img).css({top: topOffset});
-				if (slide.link_url) {
-					var $img = $('<a href="' + slide.link_url + '"></a>').append($(img));
+				if (slide.link_to) {
+					var $img = $('<a href="' + slide.link_to + '"></a>').append($(img));
 				}
 				else {
 					$img = $(img);
 				}
-				var $slideEl = $('<div class="slide-container"></div>').append($img).css('display', 'none');
+				var $slideEl = $('<div></div>');
+				$slideEl.addClass(data.settings.slide_container_class);
+				$slideEl.append($img).css('display', 'none');
 				if (slide.caption) {
-					var $capt = $('<span>' + slide.caption + '</span>').addClass('slide-caption');
+					var $capt = $('<span>' + slide.caption + '</span>');
+					$capt.addClass(data.settings.slide_caption_class);
 					$capt.appendTo($slideEl);
 				}
 				var effect = data.settings.effect;
@@ -398,9 +416,12 @@
 			};
 			
 			if ($.inArray(slide.url, data.loaded_imgs) < 0) {
-				newImg.src = '';
-				$(newImg).bind('load', function() {whenLoaded(newImg); });
-				newImg.src = slide.url;
+				if (newImg.width) {
+					whenLoaded(newImg);
+				}
+				else {
+					$(newImg).bind('load', function() {whenLoaded(newImg); });
+				}
 			}
 			else {
 				whenLoaded(newImg);

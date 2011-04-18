@@ -1,5 +1,5 @@
-Really Simple™ Slideshow
-========================
+Really Simple(TM) Slideshow
+===========================
 
 Yet another slideshow plugin for jQuery! This particular one loads images dynamically, as and when they're required by the slideshow, allowing you to create larger slideshows without having to pre-load all of the images.
 
@@ -11,3 +11,18 @@ Please see docs for information about adding slides, and the correct HTML markup
 
 For detailed docs and demos, visit:
 http://reallysimpleworks.com/slideshow
+
+
+Change Log
+==========
+
+Version 1.1 -- 18 Apr 2011
+--------------------------
+* Changed the name of the plugin file to jquery.rs.slideshow.js to bring it into line with jQuery plugin naming convention.
+* Bug fix: More consistent behaviour across browsers when loading cached images into a slideshow.
+* Changes to the default markup used for specifying slide data. Markup now makes more sense semantically, and offers the opportunity to allow non-JavaScript users to click on links to slideshow images. (Extra CSS is required to do this, and we'll publish this soon).
+* slide_data_selectors option added. This makes slide data more customisable.
+* url_data_selector option removed (replaced by slide_data_selectors).
+* caption_data_selector option removed (replaced by slide_data_selectors).
+* link_url_data_selector option removed (replaced by slide_data_selectors).
+* effect_data_selector option removed (replaced by slide_data_selectors).
