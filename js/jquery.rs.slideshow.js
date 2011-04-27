@@ -161,14 +161,19 @@
 		*	shown in seconds
 		*/
 		
-		startShow: function(interval) {
+		startShow: function(interval, instant) {
 			var self = this;
 			var data = this.data('rsf_slideshow');
-			if (!interval) {
-				interval = data.settings.interval;
+			if (!data.interval_id) {
+				if (instant) {
+					self.rsfSlideshow('nextSlide');
+				}
+				if (!interval) {
+					interval = data.settings.interval;
+				}
+				data.interval_id = setInterval(function() {self.rsfSlideshow('nextSlide'); }, interval * 1000);
+				self.rsfSlideshow('_trigger', 'rsStartShow');
 			}
-			this.rsfSlideshow('stopShow');
-			data.interval_id = setInterval(function() {self.rsfSlideshow('nextSlide'); }, interval * 1000);
 			return this;
 		},
 		
@@ -182,8 +187,22 @@
 			if (data.interval_id) {
 				clearInterval(data.interval_id);
 				data.interval_id = false;
+				this.rsfSlideshow('_trigger', 'rsStopShow');
 			}
 			return this;
+		},
+		
+		
+		/**
+		*	Returns true if the slideshow is currently 
+		*	running, false if not.
+		*/
+		
+		isRunning: function() {
+			if (this.data('rsf_slideshow').interval_id) {
+				return true;
+			}
+			return false;
 		},
 		
 		
@@ -303,7 +322,6 @@
 			var data = this.data('rsf_slideshow');
 			data.this_slide ++;
 			if (data.this_slide >= data.slides.length) {
-
 				if (data.settings.loop) {
 					data.this_slide = 0;
 				}
@@ -364,7 +382,7 @@
 			if (!queue_id) {
 				data.queued += 1;
 				queue_id = data.queued;
-				this.rsfSlideshow('_doCallbacks', 'preTransition');
+				this.rsfSlideshow('_trigger', 'rsPreTransition');
 			}
 			else if (queue_id != data.queued) {
 				return;
@@ -386,7 +404,7 @@
 				if ($.inArray(slide.url, data.loaded_imgs) < 0) {
 					data.loaded_imgs.push(slide.url);
 				}
-				$this.rsfSlideshow('_doCallbacks', 'imageReady');
+				$this.rsfSlideshow('_trigger', 'rsImageReady');
 				$(img).addClass('rsf-slideshow-image');
 				var leftOffset = Math.ceil((containerWidth / 2) - (width / 2));
 				var topOffset = Math.ceil((containerHeight / 2) - (height / 2));
@@ -510,12 +528,12 @@
 		_endTransition: function() {
 			var data = this.data('rsf_slideshow');
 			this.children('div.' + data.settings.slide_container_class + ':not(:last-child)').remove();
-			this.rsfSlideshow('_doCallbacks', 'postTransition');
+			this.rsfSlideshow('_trigger', 'rsPostTransition');
 			if (this.rsfSlideshow('currentSlideKey') == this.rsfSlideshow('totalSlides') - 1) {
-				this.rsfSlideshow('_doCallbacks', 'lastSlide');
+				this.rsfSlideshow('_trigger', 'rsLastSlide');
 			}
 			else if (this.rsfSlideshow('currentSlideKey') == 0) {
-				this.rsfSlideshow('_doCallbacks', 'firstSlide');
+				this.rsfSlideshow('_trigger', 'rsFirstSlide');
 			}
 		},
 		
@@ -548,47 +566,16 @@
 		
 		
 		/**
-		*	Add a callback to a slideshow event
-		*	Supported events:
-		*		'preTransition'
-		*		'postTransition'
-		*		'imageReady'
-		*		'lastSlide'
-		*		'firstSlide'
+		*	Wrapper for triggering slideshow events
 		*/
 		
-		addCallback: function(evnt, callback) {
+		_trigger: function(e, event_data) {
 			var data = this.data('rsf_slideshow');
-			var events = Array(
-				'preTransition',
-				'postTransition',
-				'imageReady',
-				'lastSlide',
-				'firstSlide'
-			);
-			if ($.inArray(evnt, events) < 0) {
-				return false;
+			if (typeof event_data !== 'object') {
+				event_data = {};
 			}
-			if (!data.callbacks[evnt]) {
-				data.callbacks[evnt] = Array();
-			}
-			data.callbacks[evnt].push(callback);
-			return this;
-		},
-		
-		
-		/**
-		*	Private method for firing callbacks
-		*/
-		
-		_doCallbacks: function(evnt) {
-			var data = this.data('rsf_slideshow');
-			if (!data.callbacks[evnt] || !data.callbacks[evnt].length) {
-				return;
-			}
-			for (var i = 0, len = data.callbacks[evnt].length; i < len; i ++) {
-				data.callbacks[evnt][i](data.slides[data.this_slide]);
-			}
+			$.extend(event_data, {slide_key: data.this_slide, slide: data.slides[data.this_slide]});
+			this.trigger(e, event_data);
 		}
 		
 	};
