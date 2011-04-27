@@ -78,6 +78,19 @@
 			caption: {selector: 'a', attr: 'title'},
 			link_to: {selector: 'a', attr: 'data-link-to'},
 			effect: {selector: 'a', attr: 'data-effect'}
+		},
+		//	Play/ pause link class
+		play_pause_class: 'rs-play-pause',
+		//	Default event callbacks, assigned to every slideshow
+		eventCallbacks: {
+			rsStartShow: function(rssObj, e) {
+				var settings = $(rssObj).data('rsf_slideshow').settings;
+				$('.' + settings.play_pause_class + '[data-control-for="' + $(rssObj).attr('id') + '"]').html('Pause').addClass('rss-playing');
+			},
+			rsStopShow: function(rssObj, e) {
+				var settings = $(rssObj).data('rsf_slideshow').settings;
+				$('.' + settings.play_pause_class + '[data-control-for="' + $(rssObj).attr('id') + '"]').html('Play').addClass('rss-paused');
+			}
 		}
 	};
 		
@@ -92,7 +105,8 @@
 		
 		init: function(options) {	
 			return this.each(function() {
-				var $this = $(this),
+				var self = this,
+					$this = $(this),
 					data = $this.data('rsf_slideshow'),
 					slides = Array(),
 					this_slide = 0,
@@ -106,7 +120,7 @@
 					if (typeof options === 'object') {
 						$.extend(true, settings, options);
 					};
-					$(this).data('rsf_slideshow', {
+					$this.data('rsf_slideshow', {
 						slides: slides,
 						this_slide: this_slide,
 						effect_iterator: effect_iterator,
@@ -121,13 +135,24 @@
 				$(this).rsfSlideshow('getSlidesFromMarkup');
 				
 				if (settings.slides.length) {
-					$(this).rsfSlideshow('addSlides', settings.slides);
+					$this.rsfSlideshow('addSlides', settings.slides);
 					settings.slides = Array();
 				}
 				
-				if ($(this).data('rsf_slideshow').settings.autostart) {
-					$(this).rsfSlideshow('startShow');
+				if (typeof settings.eventCallbacks === 'object') {
+					$.each(settings.eventCallbacks, function(evnt, fn) {
+						$this.bind(evnt, function(e) {fn(this, e); });
+					});
 				}
+				
+				if (settings.play_pause_class) {
+					$this.rsfSlideshow('bindPlayPause');
+				}
+				
+				if (settings.autostart) {
+					$this.rsfSlideshow('startShow');
+				}
+				
 			});
 		},
 		
@@ -589,7 +614,33 @@
 			}
 			$.extend(event_data, {slide_key: data.this_slide, slide: data.slides[data.this_slide]});
 			this.trigger(e, event_data);
+		},
+		
+		
+		
+		/******************************************************
+		*	Higher level methods for slideshow control features
+		*/
+		
+		
+		/*
+		*	Play/ Pause toggle control
+		*	class_name is the name of the play/pause button class
+		*	if not provided the global setting is used
+		*/
+		
+		bindPlayPause: function(class_name) {
+			var $self = this;
+			var data = $self.data('rsf_slideshow');
+			if (!class_name) {
+				class_name = data.settings.play_pause_class;
+			}
+			$('.' + class_name + '[data-control-for="' + $self.attr('id') + '"]').bind('click.rsfSlideshow', function(e) {
+				e.preventDefault();
+				$self.rsfSlideshow('toggleShow');
+			});
 		}
+		
 		
 	};
 	

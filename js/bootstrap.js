@@ -6,9 +6,9 @@ $(document).ready(function () {
 
 	$.rsfSlideshow({interval: 1, transition: 300});
 	
-	$('#slideshow').rsfSlideshow();
+	$('.rs-slideshow').rsfSlideshow();
 	
-	$('#slideshow').bind('rsPostTransition', function(slide) {
+	/*$('#slideshow').bind('rsPostTransition', function(e, slide) {
 		var html = '<h3>A transition has completed!</h3>';
 		html += '<p>Slide data:</p><ul>';
 		for (var key in slide) {
@@ -22,12 +22,8 @@ $(document).ready(function () {
 	});
 	$('#slideshow').bind('rsLastSlide', function(slide) {
 		$('#callback-messages').append('<p><strong>This is the last slide</strong></p>'); 
-	});
+	});*/
 	
-	$('.play-pause').click(function(e) {
-		e.preventDefault();
-		var ssid = $(this).attr('data-control-for');
-		$('#' + ssid).rsfSlideshow('toggleShow');
-	});
+	
 	
 });
