@@ -23,4 +23,10 @@ $(document).ready(function () {
 		$('#callback-messages').append('<p><strong>This is the last slide</strong></p>'); 
 	});
 	
+	$('.play-pause').click(function(e) {
+		e.preventDefault();
+		var ssid = $(this).attr('data-control-for');
+		$('#' + ssid).rsfSlideshow('toggleShow');
+	});
+	
 });

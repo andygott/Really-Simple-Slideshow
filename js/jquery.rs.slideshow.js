@@ -118,7 +118,6 @@
 					});	
 				}
 				
-				
 				$(this).rsfSlideshow('getSlidesFromMarkup');
 				
 				if (settings.slides.length) {
@@ -190,6 +189,20 @@
 				this.rsfSlideshow('_trigger', 'rsStopShow');
 			}
 			return this;
+		},
+		
+		
+		/**
+		*	Convenience method for toggling startShow and stopShow
+		*/
+		
+		toggleShow: function() {
+			if (this.rsfSlideshow('isRunning')) {
+				this.rsfSlideshow('stopShow');
+			}
+			else {
+				this.rsfSlideshow('startShow');
+			}
 		},
 		
 		
