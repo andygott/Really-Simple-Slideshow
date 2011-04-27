@@ -161,14 +161,19 @@
 		*	shown in seconds
 		*/
 		
-		startShow: function(interval) {
+		startShow: function(interval, instant) {
 			var self = this;
 			var data = this.data('rsf_slideshow');
-			if (!interval) {
-				interval = data.settings.interval;
+			if (!data.interval_id) {
+				if (instant) {
+					self.rsfSlideshow('nextSlide');
+				}
+				if (!interval) {
+					interval = data.settings.interval;
+				}
+				data.interval_id = setInterval(function() {self.rsfSlideshow('nextSlide'); }, interval * 1000);
+				this.rsfSlideshow('_doCallbacks', 'startShow');
 			}
-			this.rsfSlideshow('stopShow');
-			data.interval_id = setInterval(function() {self.rsfSlideshow('nextSlide'); }, interval * 1000);
 			return this;
 		},
 		
@@ -182,8 +187,22 @@
 			if (data.interval_id) {
 				clearInterval(data.interval_id);
 				data.interval_id = false;
+				this.rsfSlideshow('_doCallbacks', 'stopShow');
 			}
 			return this;
+		},
+		
+		
+		/**
+		*	Returns true if the slideshow is currently 
+		*	running, false if not.
+		*/
+		
+		isRunning: function() {
+			if (this.data('rsf_slideshow').interval_id) {
+				return true;
+			}
+			return false;
 		},
 		
 		
@@ -303,7 +322,6 @@
 			var data = this.data('rsf_slideshow');
 			data.this_slide ++;
 			if (data.this_slide >= data.slides.length) {
-
 				if (data.settings.loop) {
 					data.this_slide = 0;
 				}
@@ -564,7 +582,9 @@
 				'postTransition',
 				'imageReady',
 				'lastSlide',
-				'firstSlide'
+				'firstSlide',
+				'startShow',
+				'stopShow'
 			);
 			if ($.inArray(evnt, events) < 0) {
 				return false;

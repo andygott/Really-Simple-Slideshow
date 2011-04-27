@@ -75,9 +75,18 @@
 }
 
 
-
+/**
+*	Additional Demo CSS
+*/
 
 #callback-messages {
 	margin: 48px auto;
 	width: 620px;
 }
+
+.controls {
+	margin: 48px auto;
+	width: 620px;
+}
+
+
