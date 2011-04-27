@@ -612,5 +612,10 @@
   };
   
   
+  $.rsfSlideshow = function(options) {
+	  $.extend(defaults, options);
+  };
+  
+  
 })( jQuery );
 

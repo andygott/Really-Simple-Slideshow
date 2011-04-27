@@ -4,6 +4,7 @@
 
 $(document).ready(function () {
 
+	$.rsfSlideshow({interval: 1, transition: 300});
 	
 	$('#slideshow').rsfSlideshow();
 	
