@@ -79,8 +79,14 @@
 			link_to: {selector: 'a', attr: 'data-link-to'},
 			effect: {selector: 'a', attr: 'data-effect'}
 		},
-		//	Play/ pause link class
+		//	Play/ pause control class
 		play_pause_class: 'rs-play-pause',
+		//	Previous slide control class
+		prev_class: 'rs-prev',
+		//	Next slide control class
+		next_class: 'rs-next',
+		//	Atomatically stop show on previous/next control interaction
+		stop_on_prev_next: true,
 		//	Default event callbacks, assigned to every slideshow
 		eventCallbacks: {
 			rsStartShow: function(rssObj, e) {
@@ -147,6 +153,14 @@
 				
 				if (settings.play_pause_class) {
 					$this.rsfSlideshow('bindPlayPause');
+				}
+				
+				if (settings.prev_class) {
+					$this.rsfSlideshow('bindPrevious');
+				}
+				
+				if (settings.next_class) {
+					$this.rsfSlideshow('bindNext');
 				}
 				
 				if (settings.autostart) {
@@ -625,7 +639,7 @@
 		
 		/*
 		*	Play/ Pause toggle control
-		*	class_name is the name of the play/pause button class
+		*	class_name is the name of the play/pause control class
 		*	if not provided the global setting is used
 		*/
 		
@@ -638,6 +652,60 @@
 			$('.' + class_name + '[data-control-for="' + $self.attr('id') + '"]').bind('click.rsfSlideshow', function(e) {
 				e.preventDefault();
 				$self.rsfSlideshow('toggleShow');
+			});
+		},
+		
+		
+		/**
+		*	Previous slide control
+		*	class_name is the name of the "previous slide" control class
+		*	If stop_show is true, the slideshow is stopped when the 
+		*	control is clicked
+		*	if either setting is not provided the global setting is used
+		*/
+		
+		bindPrevious: function(class_name, stop_show) {
+			var $self = this;
+			var data = $self.data('rsf_slideshow');
+			if (!class_name) {
+				class_name = data.settings.prev_class;
+			}
+			if (!stop_show) {
+				stop_show = data.settings.stop_on_prev_next;
+			}
+			$('.' + class_name + '[data-control-for="' + $self.attr('id') + '"]').bind('click.rsfSlideshow', function(e) {
+				e.preventDefault();
+				$self.rsfSlideshow('previousSlide');
+				if (stop_show) {
+					$self.rsfSlideshow('stopShow');
+				}
+			});
+		},
+		
+		
+		/**
+		*	Next slide control
+		*	class_name is the name of the "next slide" control class
+		*	If stop_show is true, the slideshow is stopped when the 
+		*	control is clicked
+		*	if either setting is not provided the global setting is used
+		*/
+		
+		bindNext: function(class_name, stop_show) {
+			var $self = this;
+			var data = $self.data('rsf_slideshow');
+			if (!class_name) {
+				class_name = data.settings.next_class;
+			}
+			if (!stop_show) {
+				stop_show = data.settings.stop_on_prev_next;
+			}
+			$('.' + class_name + '[data-control-for="' + $self.attr('id') + '"]').bind('click.rsfSlideshow', function(e) {
+				e.preventDefault();
+				$self.rsfSlideshow('nextSlide');
+				if (stop_show) {
+					$self.rsfSlideshow('stopShow');
+				}
 			});
 		}
 		
