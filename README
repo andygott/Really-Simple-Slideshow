@@ -16,6 +16,14 @@ http://reallysimpleworks.com/slideshow
 Change Log
 ==========
 
+Version 1.2 -- 27 Apr 2011
+--------------------------
+* Added bindPrevious() and bindNext() methods as a quick way to create prev/next control functionality.
+* Added bindPlayPause() method as a quick way to create play/pause control functionality.
+* Added default event callbacks to options, to aid with setup of global slideshow functionality.
+* Added $.rsfSlideshow() method for setting options globally.
+* Added event triggers for slideshow events. 
+
 Version 1.1 -- 18 Apr 2011
 --------------------------
 * Changed the name of the plugin file to jquery.rs.slideshow.js to bring it into line with jQuery plugin naming convention.
