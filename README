@@ -18,6 +18,7 @@ Change Log
 
 Version 1.2 -- 27 Apr 2011
 --------------------------
+* Added bindIndex() method as a quick way to create "go to slide..." control functionality.
 * Added bindPrevious() and bindNext() methods as a quick way to create prev/next control functionality.
 * Added bindPlayPause() method as a quick way to create play/pause control functionality.
 * Added default event callbacks to options, to aid with setup of global slideshow functionality.

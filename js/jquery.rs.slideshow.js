@@ -87,6 +87,10 @@
 		next_class: 'rs-next',
 		//	Atomatically stop show on previous/next control interaction
 		stop_on_prev_next: true,
+		//	Go to slide index control class
+		index_class: 'rs-index',
+		//	Atomatically stop show on index control interaction
+		stop_on_index: true,
 		//	Default event callbacks, assigned to every slideshow
 		eventCallbacks: {
 			rsStartShow: function(rssObj, e) {
@@ -161,6 +165,10 @@
 				
 				if (settings.next_class) {
 					$this.rsfSlideshow('bindNext');
+				}
+				
+				if (settings.index_class) {
+					$this.rsfSlideshow('bindIndex');
 				}
 				
 				if (settings.autostart) {
@@ -705,6 +713,36 @@
 				$self.rsfSlideshow('nextSlide');
 				if (stop_show) {
 					$self.rsfSlideshow('stopShow');
+				}
+			});
+		},
+		
+		
+		/**
+		*	Goto a specific slide (index) control
+		*	class_name is the name of the control class
+		*	If stop_show is true, the slideshow is stopped when the 
+		*	control is clicked
+		*	if either setting is not provided the global setting is used
+		*/
+		
+		bindIndex: function(class_name, stop_show) {
+			var $self = this;
+			var data = $self.data('rsf_slideshow');
+			if (!class_name) {
+				class_name = data.settings.index_class;
+			}
+			if (!stop_show) {
+				stop_show = data.settings.stop_on_index;
+			}
+			$('.' + class_name + '[data-control-for="' + $self.attr('id') + '"]').bind('click.rsfSlideshow', function(e) {
+				e.preventDefault();
+				var slide_key = $(this).attr('data-slide-key');
+				if (slide_key) {
+					$self.rsfSlideshow('goToSlide', slide_key);
+					if (stop_show) {
+						$self.rsfSlideshow('stopShow');
+					}
 				}
 			});
 		}
