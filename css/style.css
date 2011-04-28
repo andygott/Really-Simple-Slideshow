@@ -52,7 +52,7 @@
 
 
 /**
-*	These rules make the list of links to slide images visible to users
+*	These styles make the list of links to slide images visible to users
 *	who don't have JavaScript enabled. By adding the 'no-js' class to 
 *	the HTML element, and using Modernizr to remove this class for JS
 *	users, we can style for both scenarios.
@@ -76,8 +76,48 @@
 
 
 
+/**
+*	The following styles are used in the demos with slideshow controls, 
+*	such as play/pause and prev/next buttons.
+*/
+
+.controls {
+	clear: both;
+	list-style: none;
+	margin: 12px auto;
+	width: 620px;
+}
+.controls li {
+	float: left;
+	margin-right: 12px;
+}
+.controls a {
+	background-color: #eee;
+	border: 1px solid #e9e9e9;
+	border-radius: 6px;
+	-webkit-border-radius: 6px;
+	-moz-border-radius: 6px;
+	-khtml-border-radius: 6px;
+	color: #444;
+	display: block;
+	font-weight: bold;
+	padding: 6px 12px;
+	text-decoration: none;
+}
+.controls a:hover {
+	background-color: #ddd;
+}
+
 
 #callback-messages {
 	margin: 48px auto;
 	width: 620px;
 }
+
+
+
+/*	Clearfix	*/
+.clearfix:after { content: "."; display: block; height: 0; clear: both; visibility: hidden; }
+.clearfix { display: inline-block; }
+* html .clearfix { height: 1%; } /* Hides from IE-mac \*/
+.clearfix { display: block; }
