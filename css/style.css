@@ -107,6 +107,10 @@
 .controls a:hover {
 	background-color: #ddd;
 }
+.controls .rs-active {
+	background-color: #efe;
+	border: 1px solid #9d9;
+}
 
 
 #callback-messages {

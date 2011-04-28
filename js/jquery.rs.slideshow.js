@@ -142,7 +142,7 @@
 					});	
 				}
 				
-				$(this).rsfSlideshow('getSlidesFromMarkup');
+				$this.rsfSlideshow('getSlidesFromMarkup');
 				
 				if (settings.slides.length) {
 					$this.rsfSlideshow('addSlides', settings.slides);
@@ -151,7 +151,7 @@
 				
 				if (typeof settings.eventCallbacks === 'object') {
 					$.each(settings.eventCallbacks, function(evnt, fn) {
-						$this.bind(evnt, function(e) {fn(this, e); });
+						$this.bind(evnt, function(e) {fn($this, e); });
 					});
 				}
 				
@@ -652,14 +652,16 @@
 		*/
 		
 		bindPlayPause: function(class_name) {
-			var $self = this;
-			var data = $self.data('rsf_slideshow');
-			if (!class_name) {
-				class_name = data.settings.play_pause_class;
-			}
-			$('.' + class_name + '[data-control-for="' + $self.attr('id') + '"]').bind('click.rsfSlideshow', function(e) {
-				e.preventDefault();
-				$self.rsfSlideshow('toggleShow');
+			return this.each(function() {
+				var $self = $(this);
+				var data = $self.data('rsf_slideshow');
+				if (!class_name) {
+					class_name = data.settings.play_pause_class;
+				}
+				$('.' + class_name + '[data-control-for="' + $self.attr('id') + '"]').bind('click.rsfSlideshow', function(e) {
+					e.preventDefault();
+					$self.rsfSlideshow('toggleShow');
+				});
 			});
 		},
 		
@@ -673,20 +675,22 @@
 		*/
 		
 		bindPrevious: function(class_name, stop_show) {
-			var $self = this;
-			var data = $self.data('rsf_slideshow');
-			if (!class_name) {
-				class_name = data.settings.prev_class;
-			}
-			if (!stop_show) {
-				stop_show = data.settings.stop_on_prev_next;
-			}
-			$('.' + class_name + '[data-control-for="' + $self.attr('id') + '"]').bind('click.rsfSlideshow', function(e) {
-				e.preventDefault();
-				$self.rsfSlideshow('previousSlide');
-				if (stop_show) {
-					$self.rsfSlideshow('stopShow');
+			return this.each(function() {
+				var $self = $(this);
+				var data = $self.data('rsf_slideshow');
+				if (!class_name) {
+					class_name = data.settings.prev_class;
 				}
+				if (!stop_show) {
+					stop_show = data.settings.stop_on_prev_next;
+				}
+				$('.' + class_name + '[data-control-for="' + $self.attr('id') + '"]').bind('click.rsfSlideshow', function(e) {
+					e.preventDefault();
+					$self.rsfSlideshow('previousSlide');
+					if (stop_show) {
+						$self.rsfSlideshow('stopShow');
+					}
+				});
 			});
 		},
 		
@@ -700,20 +704,22 @@
 		*/
 		
 		bindNext: function(class_name, stop_show) {
-			var $self = this;
-			var data = $self.data('rsf_slideshow');
-			if (!class_name) {
-				class_name = data.settings.next_class;
-			}
-			if (!stop_show) {
-				stop_show = data.settings.stop_on_prev_next;
-			}
-			$('.' + class_name + '[data-control-for="' + $self.attr('id') + '"]').bind('click.rsfSlideshow', function(e) {
-				e.preventDefault();
-				$self.rsfSlideshow('nextSlide');
-				if (stop_show) {
-					$self.rsfSlideshow('stopShow');
+			return this.each(function() {
+				var $self = $(this);
+				var data = $self.data('rsf_slideshow');
+				if (!class_name) {
+					class_name = data.settings.next_class;
 				}
+				if (!stop_show) {
+					stop_show = data.settings.stop_on_prev_next;
+				}
+				$('.' + class_name + '[data-control-for="' + $self.attr('id') + '"]').bind('click.rsfSlideshow', function(e) {
+					e.preventDefault();
+					$self.rsfSlideshow('nextSlide');
+					if (stop_show) {
+						$self.rsfSlideshow('stopShow');
+					}
+				});
 			});
 		},
 		
@@ -727,23 +733,25 @@
 		*/
 		
 		bindIndex: function(class_name, stop_show) {
-			var $self = this;
-			var data = $self.data('rsf_slideshow');
-			if (!class_name) {
-				class_name = data.settings.index_class;
-			}
-			if (!stop_show) {
-				stop_show = data.settings.stop_on_index;
-			}
-			$('.' + class_name + '[data-control-for="' + $self.attr('id') + '"]').bind('click.rsfSlideshow', function(e) {
-				e.preventDefault();
-				var slide_key = $(this).attr('data-slide-key');
-				if (slide_key) {
-					$self.rsfSlideshow('goToSlide', slide_key);
-					if (stop_show) {
-						$self.rsfSlideshow('stopShow');
-					}
+			return this.each(function() {
+				var $self = $(this);
+				var data = $self.data('rsf_slideshow');
+				if (!class_name) {
+					class_name = data.settings.index_class;
 				}
+				if (!stop_show) {
+					stop_show = data.settings.stop_on_index;
+				}
+				$('.' + class_name + '[data-control-for="' + $self.attr('id') + '"]').bind('click.rsfSlideshow', function(e) {
+					e.preventDefault();
+					var slide_key = $(this).attr('data-slide-key');
+					if (slide_key) {
+						$self.rsfSlideshow('goToSlide', slide_key);
+						if (stop_show) {
+							$self.rsfSlideshow('stopShow');
+						}
+					}
+				});
 			});
 		}
 		
