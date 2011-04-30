@@ -44,165 +44,7 @@
 
 
 (function( $ ){
-		
-	
-	var defaults = {
-		//	Duration of the interval between each slide in seconds
-		interval: 5,
-		//	Duration of the transition effect in milliseconds
-		transition: 1000,
-		//	The transition effect.
-		effect: 'fade',
-		//	Easing for slide effects (use the easing jQuery plugin for more options)
-		easing: 'swing',
-		//	If true, the slideshow will loop
-		loop: true,
-		//	Start slideshow automatically on initialisation
-		autostart: true,
-		//	Slides to add to the slideshow
-		slides: Array(),
-		//	Class of the div containing the slide image and caption
-		slide_container_class: 'slide-container',
-		//	Class to add to slide caption <span>
-		slide_caption_class: 'slide-caption',
-		//	jQuery selector for the element containing slide data when using markup to pass data.
-		//	If this is an ID (starts with '#') the element can be placed anywhere on the page, 
-		//	Any other selector is assumed to be a child of the slideshow element.
-		data_container: 'ol.slides',
-		//	jQuery selector for each slide data element
-		slide_data_container: 'li',
-		//	Objects containing selection routes for slide attributes
-		//	One or both of 'selector' and/or 'attr' must be present
-		slide_data_selectors: {
-			url: {selector: 'a', attr: 'href'},
-			caption: {selector: 'a', attr: 'title'},
-			link_to: {selector: 'a', attr: 'data-link-to'},
-			effect: {selector: 'a', attr: 'data-effect'}
-		},
 
-		
-		//	Default event handlers, assigned to every instance of the slideshow
-		eventHandlers: {
-			rsStartShow: function(rssObj, e) {
-				var controlSettings = $(rssObj).data('rsf_slideshow').settings.controls.playPause;
-				var $playPause = controlSettings.get($(rssObj));
-				$playPause.html('Pause').addClass(controlSettings.playing_class);
-			},
-			rsStopShow: function(rssObj, e) {
-				var controlSettings = $(rssObj).data('rsf_slideshow').settings.controls.playPause;
-				var $playPause = controlSettings.get($(rssObj));
-				$playPause.html('Play').addClass(controlSettings.paused_class);
-			}
-		},
-		
-		
-		/**
-		*	These options define methods for generating, placing and finding
-		*	slideshow control elements.
-		*/
-		
-		controls: {
-			playPause: {
-				generate: function($slideshow) {
-					return $('<a href="#" class="rs-play-pause" data-control-for="' 
-							 + $slideshow.attr('id') + '">Pause</a>');
-				},
-				place: function($slideshow, $control) {
-					$container = $slideshow.data('rsf_slideshow').settings.controls.container.get($slideshow);
-					$container.append($control);
-				},
-				get: function($slideshow) {
-					return $('.rs-play-pause[data-control-for="' + $slideshow.attr('id') + '"]');
-				},
-				playing_class: 'rs-playing',
-				paused_class: 'rs-paused',
-				auto: false
-			},
-			previousSlide: {
-				generate: function($slideshow) {
-					return $('<a href="#" class="rs-prev" data-control-for="' 
-							 + $slideshow.attr('id') + '">Previous Slide</a>');
-				},
-				place: function($slideshow, $control) {
-					$container = $slideshow.data('rsf_slideshow').settings.controls.container.get($slideshow);
-					$container.append($control);
-				},
-				get: function($slideshow) {
-					return $('.rs-prev[data-control-for="' + $slideshow.attr('id') + '"]');
-				},
-				autostop: true,
-				auto: false
-			},
-			nextSlide: {
-				generate: function($slideshow) {
-					return $('<a href="#" class="rs-next" data-control-for="' 
-							 + $slideshow.attr('id') + '">Next Slide</a>');
-				},
-				place: function($slideshow, $control) {
-					$container = $slideshow.data('rsf_slideshow').settings.controls.container.get($slideshow);
-					$container.append($control);
-				},
-				get: function($slideshow) {
-					return $('.rs-next[data-control-for="' + $slideshow.attr('id') + '"]');
-				},
-				autostop: true,
-				auto: false
-			},
-			index: {
-				generate: function($slideshow) {
-					var slide_count = $slideshow.rsfSlideshow('totalSlides'),
-						$indexControl = $('<ul class="rs-index-list clearfix"></ul>');
-					$indexControl.attr('data-control-for', $slideshow.attr('id'));
-					for (var i = 0; i < slide_count; i ++) {
-						var $link = $('<a href="#"></a>');
-						$link.addClass('rs-index');
-						$link.attr('data-control-for', $slideshow.attr('id'));
-						$link.attr('data-slide-key', i);
-						$link.append(i + 1);
-						if (i === $slideshow.rsfSlideshow('currentSlideKey')) {
-							$link.addClass('rs-active');
-						}
-						$li = $('<li></li>');
-						$li.append($link);
-						$indexControl.append($li);
-					}
-					return $indexControl;
-				},
-				place: function($slideshow, $control) {
-					$container = $slideshow.data('rsf_slideshow').settings.controls.container.get($slideshow);
-					$container.append($control);
-				},
-				get: function($slideshow) {
-					return $('.rs-index-list[data-control-for="' + $slideshow.attr('id') + '"]');
-				},
-				getEach: function($slideshow) {
-					return $('.rs-index[data-control-for="' + $slideshow.attr('id') + '"]');
-				},
-				getSingleByKey: function($slideshow, slide_key) {
-					return $('.rs-index[data-control-for="' + $slideshow.attr('id') 
-							+ '"][data-slide-key="' + slide_key + '"]');
-				},
-				getSlideKey: function($controlItem) {
-					return $controlItem.attr('data-slide-key');
-				},
-				active_class: 'rs-active',
-				autostop: true,
-				auto: false
-			},
-			container: {
-				generate: function($slideshow) {
-					return $('<div class="rs-controls" id="rs-controls-' + $slideshow.attr('id') + '"></div>');
-				},
-				place: function($slideshow, $control) {
-					$slideshow.after($control);
-				},
-				get: function($slideshow) {
-					return $('#rs-controls-' + $slideshow.attr('id'));
-				}
-			}
-		}
-	};
-		
 		
 	var methods = {
 		
@@ -213,27 +55,25 @@
 		*/
 		
 		init: function(options) {	
+		
 			return this.each(function() {
 				
-				var self = this,
-					$this = $(this),
-					data = $this.data('rsf_slideshow'),
-					slides = Array(),
-					this_slide = 0,
-					effect_iterator = {
-						this_effect: -1,
-						direction: 1
-					}
+				var slideshow = this,
+					$slideshow = $(this),
+					data = $slideshow.data('rsf_slideshow');
 					
 				if (!data) {
-					var settings = $.extend(true, {}, defaults);
+					var settings = $.extend(true, {}, $.rsfSlideshow.defaults);
 					if (typeof options === 'object') {
 						$.extend(true, settings, options);
 					};
-					$this.data('rsf_slideshow', {
-						slides: slides,
-						this_slide: this_slide,
-						effect_iterator: effect_iterator,
+					$slideshow.data('rsf_slideshow', {
+						slides: Array(),
+						this_slide: 0,
+						effect_iterator: {
+							this_effect: -1,
+							direction: 1
+						},
 						settings: settings,
 						interval_id: false,
 						loaded_imgs: Array(),
@@ -243,12 +83,12 @@
 				
 				
 				//	Attempt to find slide data in the page markup
-				$this.rsfSlideshow('getSlidesFromMarkup');
+				$slideshow.rsfSlideshow('getSlidesFromMarkup');
 				
 				
 				//	Add slide data from an array, if provided
 				if (settings.slides.length) {
-					$this.rsfSlideshow('addSlides', settings.slides);
+					$slideshow.rsfSlideshow('addSlides', settings.slides);
 					settings.slides = Array();
 				}
 				
@@ -256,29 +96,29 @@
 				//	Bind gloabal slidshow event handlers
 				if (typeof settings.eventHandlers === 'object') {
 					$.each(settings.eventHandlers, function(evnt, fn) {
-						$this.bind(evnt, function(e) {fn($this, e); });
+						$slideshow.bind(evnt, function(e) {fn($slideshow, e); });
 					});
 				}
 				
 				
 				//	Generate and bind control elements
 				if (typeof settings.controls.playPause.auto) {
-					$this.rsfSlideshow('addControl', 'playPause');
+					$slideshow.rsfSlideshow('addControl', 'playPause');
 				}
 				if (typeof settings.controls.previousSlide.auto) {
-					$this.rsfSlideshow('addControl', 'previousSlide');
+					$slideshow.rsfSlideshow('addControl', 'previousSlide');
 				}
 				if (typeof settings.controls.nextSlide.auto) {
-					$this.rsfSlideshow('addControl', 'nextSlide');
+					$slideshow.rsfSlideshow('addControl', 'nextSlide');
 				}
 				if (typeof settings.controls.index.auto) {
-					$this.rsfSlideshow('addControl', 'index');
+					$slideshow.rsfSlideshow('addControl', 'index');
 				}
 			
 				
 				//	Start the slideshow
 				if (settings.autostart) {
-					$this.rsfSlideshow('startShow');
+					$slideshow.rsfSlideshow('startShow');
 				}
 				
 			});
@@ -894,27 +734,187 @@
 	};
 	
 	
-  $.fn.rsfSlideshow = function(method) {
-	if (!this.length) {
-		return this;
-	}
-	// Method calling logic
-	if ( methods[method] ) {
-		return methods[ method ].apply( this, Array.prototype.slice.call( arguments, 1 ));
-	} 
-	else if ( typeof method === 'object' || ! method ) {
-		return methods.init.apply( this, arguments );
-	} 
-	else {
-		$.error( 'Method ' +  method + ' does not exist on jQuery.rsfSlidehow' );
-	}   
-
-  };
+	$.fn.rsfSlideshow = function(method) {
+		if (!this.length) {
+			return this;
+		}
+		// Method calling logic
+		if ( methods[method] ) {
+			return methods[ method ].apply( this, Array.prototype.slice.call( arguments, 1 ));
+		} 
+		else if ( typeof method === 'object' || ! method ) {
+			return methods.init.apply( this, arguments );
+		} 
+		else {
+			$.error( 'Method ' +  method + ' does not exist on jQuery.rsfSlidehow' );
+		}   
+	};
   
   
-  $.rsfSlideshow = function(options) {
-	  $.extend(defaults, options);
-  };
+	/**
+	*		Default options
+	*		Any default options can be set directly by accessing 
+	*		the $.rsfSlideshow.defaults hash
+	*/
+	
+	$.rsfSlideshow = {
+		defaults: {
+			//	Duration of the interval between each slide in seconds
+			interval: 5,
+			//	Duration of the transition effect in milliseconds
+			transition: 1000,
+			//	The transition effect.
+			effect: 'fade',
+			//	Easing for slide effects (use the easing jQuery plugin for more options)
+			easing: 'swing',
+			//	If true, the slideshow will loop
+			loop: true,
+			//	Start slideshow automatically on initialisation
+			autostart: true,
+			//	Slides to add to the slideshow
+			slides: Array(),
+			//	Class of the div containing the slide image and caption
+			slide_container_class: 'slide-container',
+			//	Class to add to slide caption <span>
+			slide_caption_class: 'slide-caption',
+			//	jQuery selector for the element containing slide data when using markup to pass data.
+			//	If this is an ID (starts with '#') the element can be placed anywhere on the page, 
+			//	Any other selector is assumed to be a child of the slideshow element.
+			data_container: 'ol.slides',
+			//	jQuery selector for each slide data element
+			slide_data_container: 'li',
+			//	Objects containing selection routes for slide attributes
+			//	One or both of 'selector' and/or 'attr' must be present
+			slide_data_selectors: {
+				url: {selector: 'a', attr: 'href'},
+				caption: {selector: 'a', attr: 'title'},
+				link_to: {selector: 'a', attr: 'data-link-to'},
+				effect: {selector: 'a', attr: 'data-effect'}
+			},
+			
+			
+			//	Default event handlers, assigned to every instance of the slideshow
+			eventHandlers: {
+				rsStartShow: function(rssObj, e) {
+					var controlSettings = $(rssObj).data('rsf_slideshow').settings.controls.playPause;
+					var $playPause = controlSettings.get($(rssObj));
+					$playPause.html('Pause').addClass(controlSettings.playing_class);
+				},
+				rsStopShow: function(rssObj, e) {
+					var controlSettings = $(rssObj).data('rsf_slideshow').settings.controls.playPause;
+					var $playPause = controlSettings.get($(rssObj));
+					$playPause.html('Play').addClass(controlSettings.paused_class);
+				}
+			},
+			
+			
+			/**
+			*	These options define methods for generating, placing and finding
+			*	slideshow control elements.
+			*/
+			
+			controls: {
+				playPause: {
+					generate: function($slideshow) {
+						return $('<a href="#" class="rs-play-pause" data-control-for="' 
+								 + $slideshow.attr('id') + '">Pause</a>');
+					},
+					place: function($slideshow, $control) {
+						$container = $slideshow.data('rsf_slideshow').settings.controls.container.get($slideshow);
+						$container.append($control);
+					},
+					get: function($slideshow) {
+						return $('.rs-play-pause[data-control-for="' + $slideshow.attr('id') + '"]');
+					},
+					playing_class: 'rs-playing',
+					paused_class: 'rs-paused',
+					auto: false
+				},
+				previousSlide: {
+					generate: function($slideshow) {
+						return $('<a href="#" class="rs-prev" data-control-for="' 
+								 + $slideshow.attr('id') + '">Previous Slide</a>');
+					},
+					place: function($slideshow, $control) {
+						$container = $slideshow.data('rsf_slideshow').settings.controls.container.get($slideshow);
+						$container.append($control);
+					},
+					get: function($slideshow) {
+						return $('.rs-prev[data-control-for="' + $slideshow.attr('id') + '"]');
+					},
+					autostop: true,
+					auto: false
+				},
+				nextSlide: {
+					generate: function($slideshow) {
+						return $('<a href="#" class="rs-next" data-control-for="' 
+								 + $slideshow.attr('id') + '">Next Slide</a>');
+					},
+					place: function($slideshow, $control) {
+						$container = $slideshow.data('rsf_slideshow').settings.controls.container.get($slideshow);
+						$container.append($control);
+					},
+					get: function($slideshow) {
+						return $('.rs-next[data-control-for="' + $slideshow.attr('id') + '"]');
+					},
+					autostop: true,
+					auto: false
+				},
+				index: {
+					generate: function($slideshow) {
+						var slide_count = $slideshow.rsfSlideshow('totalSlides'),
+							$indexControl = $('<ul class="rs-index-list clearfix"></ul>');
+						$indexControl.attr('data-control-for', $slideshow.attr('id'));
+						for (var i = 0; i < slide_count; i ++) {
+							var $link = $('<a href="#"></a>');
+							$link.addClass('rs-index');
+							$link.attr('data-control-for', $slideshow.attr('id'));
+							$link.attr('data-slide-key', i);
+							$link.append(i + 1);
+							if (i === $slideshow.rsfSlideshow('currentSlideKey')) {
+								$link.addClass('rs-active');
+							}
+							$li = $('<li></li>');
+							$li.append($link);
+							$indexControl.append($li);
+						}
+						return $indexControl;
+					},
+					place: function($slideshow, $control) {
+						$container = $slideshow.data('rsf_slideshow').settings.controls.container.get($slideshow);
+						$container.append($control);
+					},
+					get: function($slideshow) {
+						return $('.rs-index-list[data-control-for="' + $slideshow.attr('id') + '"]');
+					},
+					getEach: function($slideshow) {
+						return $('.rs-index[data-control-for="' + $slideshow.attr('id') + '"]');
+					},
+					getSingleByKey: function($slideshow, slide_key) {
+						return $('.rs-index[data-control-for="' + $slideshow.attr('id') 
+								+ '"][data-slide-key="' + slide_key + '"]');
+					},
+					getSlideKey: function($controlItem) {
+						return $controlItem.attr('data-slide-key');
+					},
+					active_class: 'rs-active',
+					autostop: true,
+					auto: false
+				},
+				container: {
+					generate: function($slideshow) {
+						return $('<div class="rs-controls" id="rs-controls-' + $slideshow.attr('id') + '"></div>');
+					},
+					place: function($slideshow, $control) {
+						$slideshow.after($control);
+					},
+					get: function($slideshow) {
+						return $('#rs-controls-' + $slideshow.attr('id'));
+					}
+				}
+			}
+		}
+	};
   
   
 })( jQuery );
