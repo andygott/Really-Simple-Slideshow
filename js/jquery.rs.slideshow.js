@@ -137,11 +137,11 @@
 		addSlides: function(slides) {
 			if (slides instanceof Array) {
 				for (var i = 0, len = slides.length; i < len; i ++) {
-					this.rsfSlideshow('_addSlide', slides[i]);
+					private._addSlide(this, slides[i]);
 				}
 			}
 			else {
-				this.rsfSlideshow('_addSlide', slides);
+				private._addSlide(this, slides);
 			}
 			return this;
 		},
@@ -267,57 +267,18 @@
 			
 			var self = this;
 			$cntnr.children(options.slide_data_container).each(function() {
-				var slide = $(self).rsfSlideshow('_findData', $(this), options.slide_data_selectors);
+				//var slide = $(self).rsfSlideshow('_findData', $(this), options.slide_data_selectors);
+				var slide = private._findData($(this), options.slide_data_selectors);
 				$(self).rsfSlideshow('addSlides', slide);
 			});
 			return this;
 		},
 		
 		
-		/**
-		*	Private method for iterating through data selectors 
-		*	to find data for a single slide
-		*/
-		
-		_findData: function($slideData, slide_data_selectors) {
-			var slide = {};
-			var slide_attr;
-			for (var key in slide_data_selectors) {
-				var $slideDataClone = $.extend(true, {}, $slideData);
-				if (slide_data_selectors[key].selector) {
-					$slideDataClone = $slideDataClone.children(slide_data_selectors[key].selector);
-				}
-				if (slide_data_selectors[key].attr) {
-					slide_attr = $slideDataClone.attr(slide_data_selectors[key].attr);
-				}
-				else {
-					slide_attr = $slideDataClone.text();
-				}
-				slide[key] = slide_attr;
-			}
-			return slide;
-		},
 		
 		
-		/**
-		*	Private method for adding a single slide object
-		*	to the slides array. This should not be used directly
-		*	as the addSlides() method should be used instead.
-		*/
 		
-		_addSlide: function(slide) {
-			var data = this.data('rsf_slideshow');
-			if ((typeof slide) == 'string') {
-				url = $.trim(slide);
-				data.slides.push({url: url});
-			}
-			else if (slide.url) {
-				for (var key in slide) {
-					slide[key] = $.trim(slide[key]);	
-				}
-				data.slides.push(slide);
-			}
-		},
+		
 		
 		
 		/**
@@ -749,6 +710,62 @@
 			$.error( 'Method ' +  method + ' does not exist on jQuery.rsfSlidehow' );
 		}   
 	};
+	
+	
+	
+	/**
+	*	Private methods
+	*/
+	
+	var private = {
+		
+		/**
+		*	Private method for iterating through data selectors 
+		*	to find data for a single slide
+		*/
+		
+		_findData: function($slideData, slide_data_selectors) {
+			var slide = {};
+			var slide_attr;
+			for (var key in slide_data_selectors) {
+				var $slideDataClone = $.extend(true, {}, $slideData);
+				if (slide_data_selectors[key].selector) {
+					$slideDataClone = $slideDataClone.children(slide_data_selectors[key].selector);
+				}
+				if (slide_data_selectors[key].attr) {
+					slide_attr = $slideDataClone.attr(slide_data_selectors[key].attr);
+				}
+				else {
+					slide_attr = $slideDataClone.text();
+				}
+				slide[key] = slide_attr;
+			}
+			return slide;
+		},
+		
+		
+		/**
+		*	Private method for adding a single slide object
+		*	to the slides array. This should not be used directly
+		*	as the addSlides() method should be used instead.
+		*/
+		
+		_addSlide: function($slideshow, slide) {
+			var data = $slideshow.data('rsf_slideshow');
+			if ((typeof slide) == 'string') {
+				url = $.trim(slide);
+				data.slides.push({url: url});
+			}
+			else if (slide.url) {
+				for (var key in slide) {
+					slide[key] = $.trim(slide[key]);	
+				}
+				data.slides.push(slide);
+			}
+		}
+		
+	};
+	
   
   
 	/**
