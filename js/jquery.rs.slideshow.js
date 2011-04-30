@@ -344,34 +344,34 @@
 		*	slide object
 		*/
 	
-		showSlide: function(slide, queue_id) {
-			var data = this.data('rsf_slideshow');
-			if (!queue_id) {
+		showSlide: function(slide, _queue_id) {
+			var $slideshow = this,
+				data =  $slideshow.data('rsf_slideshow');
+			if (!_queue_id) {
 				data.queued += 1;
-				queue_id = data.queued;
+				_queue_id = data.queued;
 				this.rsfSlideshow('_trigger', 'rsPreTransition');
 			}
-			else if (queue_id != data.queued) {
+			else if (_queue_id != data.queued) {
 				return;
 			}
-			var containerWidth = this.width();
-			var containerHeight = this.height();
-			this.children('img:first').css('z-index', 0);
+			var containerWidth = $slideshow.width();
+			var containerHeight = $slideshow.height();
+			$slideshow.children('img:first').css('z-index', 0);
 			var newImg = new Image();
 			newImg.src = slide.url;
-			var $this = this;
 			
 			var whenLoaded = function(img) {
 				var width = img.width;
 				var height = img.height;
 				if (!width || !height) {
-					setTimeout(function() {$this.rsfSlideshow('showSlide', slide, queue_id); }, 200);
+					setTimeout(function() {$slideshow.rsfSlideshow('showSlide', slide, _queue_id); }, 200);
 					return;
 				}
 				if ($.inArray(slide.url, data.loaded_imgs) < 0) {
 					data.loaded_imgs.push(slide.url);
 				}
-				$this.rsfSlideshow('_trigger', 'rsImageReady');
+				$slideshow.rsfSlideshow('_trigger', 'rsImageReady');
 				$(img).addClass('rsf-slideshow-image');
 				var leftOffset = Math.ceil((containerWidth / 2) - (width / 2));
 				var topOffset = Math.ceil((containerHeight / 2) - (height / 2));
@@ -395,8 +395,8 @@
 				if (slide.effect) {
 					effect = slide.effect;
 				}
-				$slideEl.appendTo($this);
-				$this.rsfSlideshow('transitionWith', $slideEl, effect);
+				$slideEl.appendTo($slideshow);
+				private._transitionWith($slideshow, $slideEl, effect);
 				return true;
 			};
 			
@@ -416,120 +416,13 @@
 		},
 		
 		
-		/**
-		*	Transition effects
-		*/
-		
-		transitionWith: function($slide, effect) {
-			var data = this.data('rsf_slideshow');
-			var $this = this;
-			var $previousSlide 
-				= this.children('div.' + data.settings.slide_container_class + ':first');
-			
-			var effect_iteration = 'random';
-			if (typeof effect === 'object' && effect.iteration && effect.effects) {
-				effect_iteration = effect.iteration;
-				effect = effect.effects;
-			}
-			
-			if (effect instanceof Array) {
-				switch (effect_iteration) {
-					case 'loop':
-						data.effect_iterator.this_effect ++;
-						if (data.effect_iterator.this_effect > effect.length - 1) {
-							data.effect_iterator.this_effect = 0;
-						}
-						break;
-					case 'backAndForth':
-						data.effect_iterator.this_effect += data.effect_iterator.direction;
-						if (data.effect_iterator.this_effect < 0) {
-							data.effect_iterator.this_effect = 1;
-							data.effect_iterator.direction = data.effect_iterator.direction * -1;
-						}
-						if (data.effect_iterator.this_effect > effect.length - 1) {
-							data.effect_iterator.this_effect = effect.length - 2;
-							data.effect_iterator.direction = data.effect_iterator.direction * -1;
-						}
-						break;
-					default:
-						data.effect_iterator.this_effect = Math.floor(Math.random() * effect.length);
-						break;
-				}
-				effect = effect[data.effect_iterator.this_effect];
-			}
-		
-			switch (effect) {
-				case 'none': 
-					$slide.css('display', 'block');
-					$this.rsfSlideshow('_endTransition');
-					break;
-				case 'fade': 
-					$slide.fadeIn(data.settings.transition, function() {
-						$this.rsfSlideshow('_endTransition');
-					});
-					break;
-				case 'slideLeft': 
-					var left_offset = $slide.outerWidth();
-					this.rsfSlideshow('_doSlide', $slide, $previousSlide, left_offset, 0);
-					break;
-				case 'slideRight': 
-					var left_offset = (0 - $slide.outerWidth());
-					this.rsfSlideshow('_doSlide', $slide, $previousSlide, left_offset, 0);
-					break;
-				case 'slideUp': 
-					var top_offset = $slide.outerHeight();
-					this.rsfSlideshow('_doSlide', $slide, $previousSlide, 0, top_offset);
-					break;
-				case 'slideDown': 
-					var top_offset = (0 - $slide.outerHeight());
-					this.rsfSlideshow('_doSlide', $slide, $previousSlide, 0, top_offset);
-					break;
-			}
-		},
 		
 		
-		/**
-		*	Anything that needs to be done after a transition ends
-		*/
-		
-		_endTransition: function() {
-			var data = this.data('rsf_slideshow');
-			this.children('div.' + data.settings.slide_container_class + ':not(:last-child)').remove();
-			this.rsfSlideshow('_trigger', 'rsPostTransition');
-			if (this.rsfSlideshow('currentSlideKey') == this.rsfSlideshow('totalSlides') - 1) {
-				this.rsfSlideshow('_trigger', 'rsLastSlide');
-			}
-			else if (this.rsfSlideshow('currentSlideKey') == 0) {
-				this.rsfSlideshow('_trigger', 'rsFirstSlide');
-			}
-		},
 		
 		
-		/**
-		*	Perform slide animation
-		*/
 		
-		_doSlide: function($slide, $previousSlide, left_offset, top_offset) {
-			var data = this.data('rsf_slideshow');
-			var $this = this;
-			$slide.css({top: top_offset, left: left_offset});
-			$slide.css('display', 'block');
-			
-			$slide.stop().animate(
-				{top: 0, left: 0},
-				data.settings.transition, 
-				data.settings.easing, 
-				function() {
-					$this.rsfSlideshow('_endTransition');																	
-				}
-			);
-			
-			$previousSlide.stop().animate(
-				{top: (0 - top_offset), left: (0 - left_offset)},
-				data.settings.transition, 
-				data.settings.easing
-			);
-		},
+		
+		
 		
 		
 		/**
@@ -547,8 +440,8 @@
 		
 		
 		
-		/******************************************************
-		*	Higher level methods for slideshow control features
+		/*****************************************************
+		*	Methods for adding slideshow control functionality
 		*/
 		
 		
@@ -563,7 +456,8 @@
 				$control = settings.controls[type].generate($slideshow);
 				$slideshow.rsfSlideshow('_controlsContainer');
 				settings.controls[type].place($slideshow, $control);
-				$slideshow.rsfSlideshow('bind_' + type, $control);
+				bind_method = 'bind' + type.substr(0, 1).toUpperCase() + type.substr(1, type.length);
+				$slideshow.rsfSlideshow(bind_method, $control);
 			});
 		},
 		
@@ -573,7 +467,7 @@
 		*	$playPause (required) is a jQuery object of elements to apply play/pause functionality to
 		*/
 		
-		bind_playPause: function($playPause) {
+		bindPlayPause: function($playPause) {
 			return this.each(function() {
 				var $slideshow = $(this);
 				var data = $slideshow.data('rsf_slideshow');
@@ -592,7 +486,7 @@
 		*		if not provided the global setting is used
 		*/
 		
-		bind_previousSlide: function($prev, autostop) {
+		bindPreviousSlide: function($prev, autostop) {
 			return this.each(function() {
 				var $slideshow = $(this);
 				var data = $slideshow.data('rsf_slideshow');
@@ -617,7 +511,7 @@
 		*		if not provided the global setting is used
 		*/
 		
-		bind_nextSlide: function($next, autostop) {
+		bindNextSlide: function($next, autostop) {
 			return this.each(function() {
 				var $slideshow = $(this);
 				var data = $slideshow.data('rsf_slideshow');
@@ -639,7 +533,7 @@
 		*	Bind indexing functionality
 		*/
 		
-		bind_index: function($index, autostop) {
+		bindIndex: function($index, autostop) {
 			return this.each(function() {
 				var $slideshow = $(this),
 					settings = $slideshow.data('rsf_slideshow').settings;
@@ -761,6 +655,124 @@
 					slide[key] = $.trim(slide[key]);	
 				}
 				data.slides.push(slide);
+			}
+		},
+		
+		
+		/**
+		*	Transition effects
+		*/
+		
+		_transitionWith: function($slideshow, $slide, effect) {
+			var data = $slideshow.data('rsf_slideshow');
+			var $previousSlide 
+				= $slideshow.children('div.' + data.settings.slide_container_class + ':first');
+			
+			var effect_iteration = 'random';
+			if (typeof effect === 'object' && effect.iteration && effect.effects) {
+				effect_iteration = effect.iteration;
+				effect = effect.effects;
+			}
+			
+			if (effect instanceof Array) {
+				switch (effect_iteration) {
+					case 'loop':
+						data.effect_iterator.this_effect ++;
+						if (data.effect_iterator.this_effect > effect.length - 1) {
+							data.effect_iterator.this_effect = 0;
+						}
+						break;
+					case 'backAndForth':
+						data.effect_iterator.this_effect += data.effect_iterator.direction;
+						if (data.effect_iterator.this_effect < 0) {
+							data.effect_iterator.this_effect = 1;
+							data.effect_iterator.direction = data.effect_iterator.direction * -1;
+						}
+						if (data.effect_iterator.this_effect > effect.length - 1) {
+							data.effect_iterator.this_effect = effect.length - 2;
+							data.effect_iterator.direction = data.effect_iterator.direction * -1;
+						}
+						break;
+					default:
+						data.effect_iterator.this_effect = Math.floor(Math.random() * effect.length);
+						break;
+				}
+				effect = effect[data.effect_iterator.this_effect];
+			}
+		
+			switch (effect) {
+				case 'none': 
+					$slide.css('display', 'block');
+					private._endTransition($slideshow);
+					break;
+				case 'fade': 
+					$slide.fadeIn(data.settings.transition, function() {
+						private._endTransition($slideshow);
+					});
+					break;
+				case 'slideLeft': 
+					var left_offset = $slide.outerWidth();
+					//$slideshow.rsfSlideshow('_doSlide', $slide, $previousSlide, left_offset, 0);
+					private._doSlide($slideshow, $slide, $previousSlide, left_offset, 0);
+					break;
+				case 'slideRight': 
+					var left_offset = (0 - $slide.outerWidth());
+					//$slideshow.rsfSlideshow('_doSlide', $slide, $previousSlide, left_offset, 0);
+					private._doSlide($slideshow, $slide, $previousSlide, left_offset, 0);
+					break;
+				case 'slideUp': 
+					var top_offset = $slide.outerHeight();
+					//$slideshow.rsfSlideshow('_doSlide', $slide, $previousSlide, 0, top_offset);
+					private._doSlide($slideshow, $slide, $previousSlide, 0, top_offset);
+					break;
+				case 'slideDown': 
+					var top_offset = (0 - $slide.outerHeight());
+					//$slideshow.rsfSlideshow('_doSlide', $slide, $previousSlide, 0, top_offset);
+					private._doSlide($slideshow, $slide, $previousSlide, 0, top_offset);
+					break;
+			}
+		},
+		
+		
+		/**
+		*	Perform slide animation
+		*/
+		
+		_doSlide: function($slideshow, $slide, $previousSlide, left_offset, top_offset) {
+			var data = $slideshow.data('rsf_slideshow');
+			$slide.css({top: top_offset, left: left_offset});
+			$slide.css('display', 'block');
+			
+			$slide.stop().animate(
+				{top: 0, left: 0},
+				data.settings.transition, 
+				data.settings.easing, 
+				function() {
+					private._endTransition($slideshow);
+				}
+			);
+			
+			$previousSlide.stop().animate(
+				{top: (0 - top_offset), left: (0 - left_offset)},
+				data.settings.transition, 
+				data.settings.easing
+			);
+		},
+		
+		
+		/**
+		*	Anything that needs to be done after a transition ends
+		*/
+		
+		_endTransition: function($slideshow) {
+			var data = $slideshow.data('rsf_slideshow');
+			$slideshow.children('div.' + data.settings.slide_container_class + ':not(:last-child)').remove();
+			$slideshow.rsfSlideshow('_trigger', 'rsPostTransition');
+			if ($slideshow.rsfSlideshow('currentSlideKey') == $slideshow.rsfSlideshow('totalSlides') - 1) {
+				$slideshow.rsfSlideshow('_trigger', 'rsLastSlide');
+			}
+			else if ($slideshow.rsfSlideshow('currentSlideKey') == 0) {
+				$slideshow.rsfSlideshow('_trigger', 'rsFirstSlide');
 			}
 		}
 		
