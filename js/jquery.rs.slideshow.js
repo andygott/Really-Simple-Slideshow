@@ -102,16 +102,16 @@
 				
 				
 				//	Generate and bind control elements
-				if (typeof settings.controls.playPause.auto) {
+				if (settings.controls.playPause.auto) {
 					$slideshow.rsfSlideshow('addControl', 'playPause');
 				}
-				if (typeof settings.controls.previousSlide.auto) {
+				if (settings.controls.previousSlide.auto) {
 					$slideshow.rsfSlideshow('addControl', 'previousSlide');
 				}
-				if (typeof settings.controls.nextSlide.auto) {
+				if (settings.controls.nextSlide.auto) {
 					$slideshow.rsfSlideshow('addControl', 'nextSlide');
 				}
-				if (typeof settings.controls.index.auto) {
+				if (settings.controls.index.auto) {
 					$slideshow.rsfSlideshow('addControl', 'index');
 				}
 			
