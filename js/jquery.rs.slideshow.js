@@ -1,5 +1,5 @@
 /**
-* 	Really Simple™ Slideshow jQuery plug-in 1.2
+* 	Really Simple™ Slideshow jQuery plug-in 1.3
 *	---------------------------------------------------------
 *	Load slideshow images dynamically, instead of all at once
 *	---------------------------------------------------------
@@ -154,17 +154,19 @@
 		*/
 		
 		startShow: function(interval, instant) {
-			var self = this;
-			var data = this.data('rsf_slideshow');
+			var $slideshow = this;
+			var data = $slideshow.data('rsf_slideshow');
 			if (!data.interval_id) {
 				if (instant) {
-					self.rsfSlideshow('nextSlide');
+					$slideshow.rsfSlideshow('nextSlide');
 				}
 				if (!interval) {
 					interval = data.settings.interval;
 				}
-				data.interval_id = setInterval(function() {self.rsfSlideshow('nextSlide'); }, interval * 1000);
-				self.rsfSlideshow('_trigger', 'rsStartShow');
+				data.interval_id = setInterval(function() {
+					$slideshow.rsfSlideshow('nextSlide'); 
+				}, interval * 1000);
+				private._trigger($slideshow, 'rsStartShow');
 			}
 			return this;
 		},
@@ -179,7 +181,7 @@
 			if (data.interval_id) {
 				clearInterval(data.interval_id);
 				data.interval_id = false;
-				this.rsfSlideshow('_trigger', 'rsStopShow');
+				private._trigger(this, 'rsStopShow');
 			}
 			return this;
 		},
@@ -350,7 +352,7 @@
 			if (!_queue_id) {
 				data.queued += 1;
 				_queue_id = data.queued;
-				this.rsfSlideshow('_trigger', 'rsPreTransition');
+				private._trigger($slideshow, 'rsPreTransition');
 			}
 			else if (_queue_id != data.queued) {
 				return;
@@ -371,7 +373,7 @@
 				if ($.inArray(slide.url, data.loaded_imgs) < 0) {
 					data.loaded_imgs.push(slide.url);
 				}
-				$slideshow.rsfSlideshow('_trigger', 'rsImageReady');
+				private._trigger($slideshow, 'rsImageReady');
 				$(img).addClass('rsf-slideshow-image');
 				var leftOffset = Math.ceil((containerWidth / 2) - (width / 2));
 				var topOffset = Math.ceil((containerHeight / 2) - (height / 2));
@@ -415,28 +417,7 @@
 			return this;
 		},
 		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		/**
-		*	Wrapper for triggering slideshow events
-		*/
-		
-		_trigger: function(e, event_data) {
-			var data = this.data('rsf_slideshow');
-			if (typeof event_data !== 'object') {
-				event_data = {};
-			}
-			$.extend(event_data, {slide_key: data.this_slide, slide: data.slides[data.this_slide]});
-			this.trigger(e, event_data);
-		},
+
 		
 		
 		
@@ -454,7 +435,7 @@
 				var $slideshow = $(this),
 					settings = $slideshow.data('rsf_slideshow').settings;
 				$control = settings.controls[type].generate($slideshow);
-				$slideshow.rsfSlideshow('_controlsContainer');
+				private._controlsContainer($slideshow);
 				settings.controls[type].place($slideshow, $control);
 				bind_method = 'bind' + type.substr(0, 1).toUpperCase() + type.substr(1, type.length);
 				$slideshow.rsfSlideshow(bind_method, $control);
@@ -551,42 +532,14 @@
 						}
 					}
 				});
-				$slideshow.rsfSlideshow('_bindActiveIndex');
+				private._bindActiveIndex($slideshow);
 			});
-		},
+		}
 
 		
-		/**
-		*	Bind event handlers for adding and remving a class to index elements
-		*	according to the current slide key
-		*/
-		
-		_bindActiveIndex: function() {
-			var $slideshow = this,
-				indexSettings = $slideshow.data('rsf_slideshow').settings.controls.index;
-			$slideshow.bind('rsPreTransition', function() {
-				var current_slide_key = $(this).rsfSlideshow('currentSlideKey');
-				indexSettings.getEach($slideshow).removeClass(indexSettings.active_class);
-				indexSettings.getSingleByKey($slideshow, current_slide_key).addClass(indexSettings.active_class);
-			});
-		},
-		
-		
-		/**
-		*	check for controls container and generate if not present
-		*/
-		
-		_controlsContainer: function() {
-			var $slideshow = this,
-				settings = $slideshow.data('rsf_slideshow').settings;
-			if (!settings.controls.container.get($slideshow).length) {
-				$container = settings.controls.container.generate($slideshow);
-				settings.controls.container.place($slideshow, $container);
-			}
-		}
-		
-		
 	};
+	
+	
 	
 	
 	$.fn.rsfSlideshow = function(method) {
@@ -604,6 +557,7 @@
 			$.error( 'Method ' +  method + ' does not exist on jQuery.rsfSlidehow' );
 		}   
 	};
+	
 	
 	
 	
@@ -767,13 +721,55 @@
 		_endTransition: function($slideshow) {
 			var data = $slideshow.data('rsf_slideshow');
 			$slideshow.children('div.' + data.settings.slide_container_class + ':not(:last-child)').remove();
-			$slideshow.rsfSlideshow('_trigger', 'rsPostTransition');
+			private._trigger($slideshow, 'rsPostTransition');
 			if ($slideshow.rsfSlideshow('currentSlideKey') == $slideshow.rsfSlideshow('totalSlides') - 1) {
-				$slideshow.rsfSlideshow('_trigger', 'rsLastSlide');
+				private._trigger($slideshow, 'rsLastSlide');
 			}
 			else if ($slideshow.rsfSlideshow('currentSlideKey') == 0) {
-				$slideshow.rsfSlideshow('_trigger', 'rsFirstSlide');
+				private._trigger($slideshow, 'rsFirstSlide');
 			}
+		},
+		
+		
+		/**
+		*	Bind event handlers for adding and remving a class to index elements
+		*	according to the current slide key
+		*/
+		
+		_bindActiveIndex: function($slideshow) {
+			var indexSettings = $slideshow.data('rsf_slideshow').settings.controls.index;
+			$slideshow.bind('rsPreTransition', function() {
+				var current_slide_key = $(this).rsfSlideshow('currentSlideKey');
+				indexSettings.getEach($slideshow).removeClass(indexSettings.active_class);
+				indexSettings.getSingleByKey($slideshow, current_slide_key).addClass(indexSettings.active_class);
+			});
+		},
+		
+		
+		/**
+		*	check for controls container and generate if not present
+		*/
+		
+		_controlsContainer: function($slideshow) {
+			var settings = $slideshow.data('rsf_slideshow').settings;
+			if (!settings.controls.container.get($slideshow).length) {
+				$container = settings.controls.container.generate($slideshow);
+				settings.controls.container.place($slideshow, $container);
+			}
+		},
+		
+		
+		/**
+		*	Wrapper for triggering slideshow events
+		*/
+		
+		_trigger: function($slideshow, e, event_data) {
+			var data = $slideshow.data('rsf_slideshow');
+			if (typeof event_data !== 'object') {
+				event_data = {};
+			}
+			$.extend(event_data, {slide_key: data.this_slide, slide: data.slides[data.this_slide]});
+			$slideshow.trigger(e, event_data);
 		}
 		
 	};
