@@ -16,6 +16,22 @@ http://reallysimpleworks.com/slideshow
 Change Log
 ==========
 
+Version 1.3.1 -- 2 May 2011
+---------------------------
+* Fixed image size detection bug when resizing images using CSS.
+* Fixed bug causing controls to be auto-generated regardless of settings.
+* Private methods are no longer available publicly
+* Moved all default options to $.rsfSlideshow.defaults
+
+Version 1.3 -- 1 May 2011
+-------------------------
+* Changed the name of the eventCallbacks option to eventHandlers.
+* Changed the behaviour of the following methods: bindPlayPause, bindPreviousSlide, bindNextSlide and bindIndex so that they require jQuery objects to bind the behaviours to.
+* Changed the name of the bindNext method to bindNextSlide.
+* Changed the name of the bindPrevious method to bindPreviousSlide.
+* Removed the following options: play_pause_class, prev_class, next_class, stop_on_prev_next, index_class and stop_on_index.
+* Added auto-generation of control elements.
+
 Version 1.2 -- 27 Apr 2011
 --------------------------
 * Added bindIndex() method as a quick way to create "go to slide..." control functionality.
