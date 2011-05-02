@@ -25,6 +25,7 @@ Version 1.3.1 -- 2 May 2011
 
 Version 1.3 -- 1 May 2011
 -------------------------
+* Added the controls option.
 * Changed the name of the eventCallbacks option to eventHandlers.
 * Changed the behaviour of the following methods: bindPlayPause, bindPreviousSlide, bindNextSlide and bindIndex so that they require jQuery objects to bind the behaviours to.
 * Changed the name of the bindNext method to bindNextSlide.
