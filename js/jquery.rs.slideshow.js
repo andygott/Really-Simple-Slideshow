@@ -108,11 +108,11 @@
 				if (settings.controls.previousSlide.auto) {
 					$slideshow.rsfSlideshow('addControl', 'previousSlide');
 				}
-				if (settings.controls.nextSlide.auto) {
-					$slideshow.rsfSlideshow('addControl', 'nextSlide');
-				}
 				if (settings.controls.index.auto) {
 					$slideshow.rsfSlideshow('addControl', 'index');
+				}
+				if (settings.controls.nextSlide.auto) {
+					$slideshow.rsfSlideshow('addControl', 'nextSlide');
 				}
 			
 				
@@ -375,6 +375,10 @@
 				}
 				private._trigger($slideshow, 'rsImageReady');
 				$(img).addClass('rsf-slideshow-image');
+				$slideshow.prepend($(img));
+				width = $(img).outerWidth();
+				height = $(img).outerHeight();
+				$(img).detach();
 				var leftOffset = Math.ceil((containerWidth / 2) - (width / 2));
 				var topOffset = Math.ceil((containerHeight / 2) - (height / 2));
 				$(img).css({left: leftOffset});
@@ -858,7 +862,7 @@
 				previousSlide: {
 					generate: function($slideshow) {
 						return $('<a href="#" class="rs-prev" data-control-for="' 
-								 + $slideshow.attr('id') + '">Previous Slide</a>');
+								 + $slideshow.attr('id') + '">&lt;</a>');
 					},
 					place: function($slideshow, $control) {
 						$container = $slideshow.data('rsf_slideshow').settings.controls.container.get($slideshow);
@@ -873,7 +877,7 @@
 				nextSlide: {
 					generate: function($slideshow) {
 						return $('<a href="#" class="rs-next" data-control-for="' 
-								 + $slideshow.attr('id') + '">Next Slide</a>');
+								 + $slideshow.attr('id') + '">&gt;</a>');
 					},
 					place: function($slideshow, $control) {
 						$container = $slideshow.data('rsf_slideshow').settings.controls.container.get($slideshow);
@@ -928,7 +932,7 @@
 				},
 				container: {
 					generate: function($slideshow) {
-						return $('<div class="rs-controls" id="rs-controls-' + $slideshow.attr('id') + '"></div>');
+						return $('<div class="rs-controls clearfix" id="rs-controls-' + $slideshow.attr('id') + '"></div>');
 					},
 					place: function($slideshow, $control) {
 						$slideshow.after($control);
