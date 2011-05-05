@@ -16,6 +16,12 @@ http://reallysimpleworks.com/slideshow
 Change Log
 ==========
 
+Version 1.4 -- 5 May 2011
+---------------------------
+* Added the removeSlides() method.
+* Added the getSlideData() method.
+* Included QTest unit testing (for new methods only).
+
 Version 1.3.1 -- 2 May 2011
 ---------------------------
 * Fixed image size detection bug when resizing images using CSS.
