@@ -1,5 +1,5 @@
 /**
-* 	Really Simple™ Slideshow jQuery plug-in 1.3.1
+* 	Really Simple™ Slideshow jQuery plug-in 1.4
 *	---------------------------------------------------------
 *	Load slideshow images dynamically, instead of all at once
 *	---------------------------------------------------------
@@ -148,9 +148,59 @@
 		
 		
 		/**
+		*	Remove slide(s) from the slideshow
+		*	slide_keys is optional and can be an integer or
+		*	and array of integers.
+		*/
+		
+		removeSlides: function(slide_keys) {
+			if (slide_keys === undefined) {
+				return this.each(function() {
+					$(this).data('rsf_slideshow').slides = [];
+				});
+			}
+			else if (slide_keys instanceof Array) {
+				slide_keys.sort(function(a, b) {return b - a; });
+				var removed = [];
+				return this.each(function() {
+					for (var i = 0, len = slide_keys.length; i < len; i ++) {
+						if ($.inArray(slide_keys[i], removed) === -1) {
+							private._removeSlide($(this), slide_keys[i]);
+							removed.push(slide_keys[i]);
+						}
+					}
+				});
+			}
+			else {
+				return this.each(function() {
+					private._removeSlide($(this), slide_keys);
+				});
+			}
+		},
+		
+		
+		/**
+		*	Returns a slide data object by key, or the
+		*	entire slides array if a key is not specified
+		*/
+		
+		getSlideData: function(key) {
+			if (key === undefined) {
+				return this.data('rsf_slideshow').slides;
+			}
+			if (this.data('rsf_slideshow').slides[key]) {
+				return this.data('rsf_slideshow').slides[key];
+			}
+			return false;
+		},
+		
+		
+		/**
 		*	Start the slideshow
 		*	interval is the duration for which each slide is
 		*	shown in seconds
+		*	instant is an optional flag: if true, the first transition
+		*	is triggered with no interval
 		*/
 		
 		startShow: function(interval, instant) {
@@ -614,6 +664,15 @@
 				}
 				data.slides.push(slide);
 			}
+		},
+		
+		
+		/**
+		*	Remove a single slide from the slides array
+		*/
+		
+		_removeSlide: function($slideshow, key) {
+			$slideshow.data('rsf_slideshow').slides.splice(key, 1);
 		},
 		
 		
