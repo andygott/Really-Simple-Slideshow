@@ -16,6 +16,11 @@ http://reallysimpleworks.com/slideshow
 Change Log
 ==========
 
+Version 1.4.1 -- 12 May 2011
+---------------------------
+* Renamed the 'private' object to 'RssPrivateMethods' to avoid problems with the global namespace.
+* Tidy up of the code and correction of some minor errors.
+
 Version 1.4 -- 5 May 2011
 ---------------------------
 * Added the removeSlides() method.

@@ -1,16 +1,16 @@
 /**
-* 	Really Simple™ Slideshow jQuery plug-in 1.4
+*	Really Simple™ Slideshow jQuery plug-in 1.4.1
 *	---------------------------------------------------------
 *	Load slideshow images dynamically, instead of all at once
 *	---------------------------------------------------------
 *
 *	Introduction, Demos, Docs and Downloads:
-* 	http://reallysimpleworks.com/slideshow
+*	http://reallysimpleworks.com/slideshow
 *
-* 	Copyright (c) 2011 Really Simple
+*	Copyright (c) 2011 Really Simple
 *	http://reallysimpleworks.com
 *
-* 	Licensed under the MIT license:
+*	Licensed under the MIT license:
 *	http://www.opensource.org/licenses/mit-license.php
 *	Free to use for both commercial and non-commercial.
 */
@@ -25,7 +25,7 @@
 *
 *	$('#my-slideshow-div').rsfSlideshow();
 *
-*	If you're pulling in slide data from elsewhere and want to 
+*	If you're pulling in slide data from elsewhere and want to
 *	manually add slides to the slideshow:
 *
 *	var slides = Array(
@@ -43,32 +43,33 @@
 
 
 
-(function( $ ){
+(function($) {
 
-		
+
 	var methods = {
-		
-		
+
+
 		/**
 		*	The 'options' object can be used to override any of the
 		*	default parameters in the 'defaults' object above
 		*/
-		
-		init: function(options) {	
-		
+
+		init: function(options) {
+
 			return this.each(function() {
-				
+
 				var slideshow = this,
 					$slideshow = $(this),
-					data = $slideshow.data('rsf_slideshow');
+					data = $slideshow.data('rsf_slideshow'),
+					settings;
 					
 				if (!data) {
-					var settings = $.extend(true, {}, $.rsfSlideshow.defaults);
+					settings = $.extend(true, {}, $.rsfSlideshow.defaults);
 					if (typeof options === 'object') {
 						$.extend(true, settings, options);
-					};
+					}
 					$slideshow.data('rsf_slideshow', {
-						slides: Array(),
+						slides: [],
 						this_slide: 0,
 						effect_iterator: {
 							this_effect: -1,
@@ -76,10 +77,11 @@
 						},
 						settings: settings,
 						interval_id: false,
-						loaded_imgs: Array(),
+						loaded_imgs: [],
 						queued: 0
 					});	
 				}
+				settings = data.settings;
 				
 				
 				//	Attempt to find slide data in the page markup
@@ -89,7 +91,7 @@
 				//	Add slide data from an array, if provided
 				if (settings.slides.length) {
 					$slideshow.rsfSlideshow('addSlides', settings.slides);
-					settings.slides = Array();
+					settings.slides = [];
 				}
 				
 				
@@ -137,11 +139,11 @@
 		addSlides: function(slides) {
 			if (slides instanceof Array) {
 				for (var i = 0, len = slides.length; i < len; i ++) {
-					private._addSlide(this, slides[i]);
+					RssPrivateMethods._addSlide(this, slides[i]);
 				}
 			}
 			else {
-				private._addSlide(this, slides);
+				RssPrivateMethods._addSlide(this, slides);
 			}
 			return this;
 		},
@@ -165,7 +167,7 @@
 				return this.each(function() {
 					for (var i = 0, len = slide_keys.length; i < len; i ++) {
 						if ($.inArray(slide_keys[i], removed) === -1) {
-							private._removeSlide($(this), slide_keys[i]);
+							RssPrivateMethods._removeSlide($(this), slide_keys[i]);
 							removed.push(slide_keys[i]);
 						}
 					}
@@ -173,7 +175,7 @@
 			}
 			else {
 				return this.each(function() {
-					private._removeSlide($(this), slide_keys);
+					RssPrivateMethods._removeSlide($(this), slide_keys);
 				});
 			}
 		},
@@ -216,7 +218,7 @@
 				data.interval_id = setInterval(function() {
 					$slideshow.rsfSlideshow('nextSlide'); 
 				}, interval * 1000);
-				private._trigger($slideshow, 'rsStartShow');
+				RssPrivateMethods._trigger($slideshow, 'rsStartShow');
 			}
 			return this;
 		},
@@ -231,7 +233,7 @@
 			if (data.interval_id) {
 				clearInterval(data.interval_id);
 				data.interval_id = false;
-				private._trigger(this, 'rsStopShow');
+				RssPrivateMethods._trigger(this, 'rsStopShow');
 			}
 			return this;
 		},
@@ -298,11 +300,12 @@
 			if (!options.data_container) {
 				options.data_container = data.settings.data_container;
 			}
+			var $cntnr;
 			if (options.data_container.charAt(0) === '#') {
-				var $cntnr = $(options.data_container);
+				$cntnr = $(options.data_container);
 			}
 			else {
-				var $cntnr = $(this).children(options.data_container);
+				$cntnr = $(this).children(options.data_container);
 			}
 			if (!$cntnr.length) {
 				return false;
@@ -320,7 +323,7 @@
 			var self = this;
 			$cntnr.children(options.slide_data_container).each(function() {
 				//var slide = $(self).rsfSlideshow('_findData', $(this), options.slide_data_selectors);
-				var slide = private._findData($(this), options.slide_data_selectors);
+				var slide = RssPrivateMethods._findData($(this), options.slide_data_selectors);
 				$(self).rsfSlideshow('addSlides', slide);
 			});
 			return this;
@@ -402,9 +405,9 @@
 			if (!_queue_id) {
 				data.queued += 1;
 				_queue_id = data.queued;
-				private._trigger($slideshow, 'rsPreTransition');
+				RssPrivateMethods._trigger($slideshow, 'rsPreTransition');
 			}
-			else if (_queue_id != data.queued) {
+			else if (_queue_id !== data.queued) {
 				return;
 			}
 			var containerWidth = $slideshow.width();
@@ -423,7 +426,7 @@
 				if ($.inArray(slide.url, data.loaded_imgs) < 0) {
 					data.loaded_imgs.push(slide.url);
 				}
-				private._trigger($slideshow, 'rsImageReady');
+				RssPrivateMethods._trigger($slideshow, 'rsImageReady');
 				$(img).addClass('rsf-slideshow-image');
 				$slideshow.prepend($(img));
 				width = $(img).outerWidth();
@@ -433,8 +436,9 @@
 				var topOffset = Math.ceil((containerHeight / 2) - (height / 2));
 				$(img).css({left: leftOffset});
 				$(img).css({top: topOffset});
+				var $img;
 				if (slide.link_to) {
-					var $img = $('<a href="' + slide.link_to + '"></a>').append($(img));
+					$img = $('<a href="' + slide.link_to + '"></a>').append($(img));
 				}
 				else {
 					$img = $(img);
@@ -452,7 +456,7 @@
 					effect = slide.effect;
 				}
 				$slideEl.appendTo($slideshow);
-				private._transitionWith($slideshow, $slideEl, effect);
+				RssPrivateMethods._transitionWith($slideshow, $slideEl, effect);
 				return true;
 			};
 			
@@ -488,10 +492,10 @@
 			return this.each(function() {
 				var $slideshow = $(this),
 					settings = $slideshow.data('rsf_slideshow').settings;
-				$control = settings.controls[type].generate($slideshow);
-				private._controlsContainer($slideshow);
+				var $control = settings.controls[type].generate($slideshow);
+				RssPrivateMethods._controlsContainer($slideshow);
 				settings.controls[type].place($slideshow, $control);
-				bind_method = 'bind' + type.substr(0, 1).toUpperCase() + type.substr(1, type.length);
+				var bind_method = 'bind' + type.substr(0, 1).toUpperCase() + type.substr(1, type.length);
 				$slideshow.rsfSlideshow(bind_method, $control);
 			});
 		},
@@ -575,7 +579,7 @@
 				if (!autostop) {
 					autostop = settings.controls.index.autostop;
 				}
-				$indexLinks = settings.controls.index.getEach($slideshow);
+				var $indexLinks = settings.controls.index.getEach($slideshow);
 				$indexLinks.bind('click.rsfSlideshow', function(e) {
 					e.preventDefault();
 					var slide_key = settings.controls.index.getSlideKey($(this));
@@ -586,7 +590,7 @@
 						}
 					}
 				});
-				private._bindActiveIndex($slideshow);
+				RssPrivateMethods._bindActiveIndex($slideshow);
 			});
 		}
 
@@ -619,7 +623,7 @@
 	*	Private methods
 	*/
 	
-	var private = {
+	var RssPrivateMethods = {
 		
 		/**
 		*	Private method for iterating through data selectors 
@@ -630,17 +634,19 @@
 			var slide = {};
 			var slide_attr;
 			for (var key in slide_data_selectors) {
-				var $slideDataClone = $.extend(true, {}, $slideData);
-				if (slide_data_selectors[key].selector) {
-					$slideDataClone = $slideDataClone.children(slide_data_selectors[key].selector);
+				if (slide_data_selectors.hasOwnProperty(key)) {
+					var $slideDataClone = $.extend(true, {}, $slideData);
+					if (slide_data_selectors[key].selector) {
+						$slideDataClone = $slideDataClone.children(slide_data_selectors[key].selector);
+					}
+					if (slide_data_selectors[key].attr) {
+						slide_attr = $slideDataClone.attr(slide_data_selectors[key].attr);
+					}
+					else {
+						slide_attr = $slideDataClone.text();
+					}
+					slide[key] = slide_attr;
 				}
-				if (slide_data_selectors[key].attr) {
-					slide_attr = $slideDataClone.attr(slide_data_selectors[key].attr);
-				}
-				else {
-					slide_attr = $slideDataClone.text();
-				}
-				slide[key] = slide_attr;
 			}
 			return slide;
 		},
@@ -654,13 +660,15 @@
 		
 		_addSlide: function($slideshow, slide) {
 			var data = $slideshow.data('rsf_slideshow');
-			if ((typeof slide) == 'string') {
-				url = $.trim(slide);
+			if (typeof slide === 'string') {
+				var url = $.trim(slide);
 				data.slides.push({url: url});
 			}
 			else if (slide.url) {
 				for (var key in slide) {
-					slide[key] = $.trim(slide[key]);	
+					if (slide.hasOwnProperty(key)) {
+						slide[key] = $.trim(slide[key]);
+					}
 				}
 				data.slides.push(slide);
 			}
@@ -716,36 +724,37 @@
 				}
 				effect = effect[data.effect_iterator.this_effect];
 			}
-		
+			
+			var left_offset, top_offset;
 			switch (effect) {
 				case 'none': 
 					$slide.css('display', 'block');
-					private._endTransition($slideshow);
+					RssPrivateMethods._endTransition($slideshow);
 					break;
 				case 'fade': 
 					$slide.fadeIn(data.settings.transition, function() {
-						private._endTransition($slideshow);
+						RssPrivateMethods._endTransition($slideshow);
 					});
 					break;
 				case 'slideLeft': 
-					var left_offset = $slide.outerWidth();
+					left_offset = $slide.outerWidth();
 					//$slideshow.rsfSlideshow('_doSlide', $slide, $previousSlide, left_offset, 0);
-					private._doSlide($slideshow, $slide, $previousSlide, left_offset, 0);
+					RssPrivateMethods._doSlide($slideshow, $slide, $previousSlide, left_offset, 0);
 					break;
 				case 'slideRight': 
-					var left_offset = (0 - $slide.outerWidth());
+					left_offset = (0 - $slide.outerWidth());
 					//$slideshow.rsfSlideshow('_doSlide', $slide, $previousSlide, left_offset, 0);
-					private._doSlide($slideshow, $slide, $previousSlide, left_offset, 0);
+					RssPrivateMethods._doSlide($slideshow, $slide, $previousSlide, left_offset, 0);
 					break;
 				case 'slideUp': 
-					var top_offset = $slide.outerHeight();
+					top_offset = $slide.outerHeight();
 					//$slideshow.rsfSlideshow('_doSlide', $slide, $previousSlide, 0, top_offset);
-					private._doSlide($slideshow, $slide, $previousSlide, 0, top_offset);
+					RssPrivateMethods._doSlide($slideshow, $slide, $previousSlide, 0, top_offset);
 					break;
 				case 'slideDown': 
-					var top_offset = (0 - $slide.outerHeight());
+					top_offset = (0 - $slide.outerHeight());
 					//$slideshow.rsfSlideshow('_doSlide', $slide, $previousSlide, 0, top_offset);
-					private._doSlide($slideshow, $slide, $previousSlide, 0, top_offset);
+					RssPrivateMethods._doSlide($slideshow, $slide, $previousSlide, 0, top_offset);
 					break;
 			}
 		},
@@ -765,7 +774,7 @@
 				data.settings.transition, 
 				data.settings.easing, 
 				function() {
-					private._endTransition($slideshow);
+					RssPrivateMethods._endTransition($slideshow);
 				}
 			);
 			
@@ -784,12 +793,12 @@
 		_endTransition: function($slideshow) {
 			var data = $slideshow.data('rsf_slideshow');
 			$slideshow.children('div.' + data.settings.slide_container_class + ':not(:last-child)').remove();
-			private._trigger($slideshow, 'rsPostTransition');
-			if ($slideshow.rsfSlideshow('currentSlideKey') == $slideshow.rsfSlideshow('totalSlides') - 1) {
-				private._trigger($slideshow, 'rsLastSlide');
+			RssPrivateMethods._trigger($slideshow, 'rsPostTransition');
+			if ($slideshow.rsfSlideshow('currentSlideKey') === $slideshow.rsfSlideshow('totalSlides') - 1) {
+				RssPrivateMethods._trigger($slideshow, 'rsLastSlide');
 			}
-			else if ($slideshow.rsfSlideshow('currentSlideKey') == 0) {
-				private._trigger($slideshow, 'rsFirstSlide');
+			else if ($slideshow.rsfSlideshow('currentSlideKey') === 0) {
+				RssPrivateMethods._trigger($slideshow, 'rsFirstSlide');
 			}
 		},
 		
@@ -816,7 +825,7 @@
 		_controlsContainer: function($slideshow) {
 			var settings = $slideshow.data('rsf_slideshow').settings;
 			if (!settings.controls.container.get($slideshow).length) {
-				$container = settings.controls.container.generate($slideshow);
+				var $container = settings.controls.container.generate($slideshow);
 				settings.controls.container.place($slideshow, $container);
 			}
 		},
@@ -860,7 +869,7 @@
 			//	Start slideshow automatically on initialisation
 			autostart: true,
 			//	Slides to add to the slideshow
-			slides: Array(),
+			slides: [],
 			//	Class of the div containing the slide image and caption
 			slide_container_class: 'slide-container',
 			//	Class to add to slide caption <span>
@@ -904,11 +913,12 @@
 			controls: {
 				playPause: {
 					generate: function($slideshow) {
-						return $('<a href="#" class="rs-play-pause" data-control-for="' 
-								 + $slideshow.attr('id') + '">Pause</a>');
+						return $('<a href="#" class="rs-play-pause" data-control-for="' + 
+								 $slideshow.attr('id') + '">Pause</a>');
 					},
 					place: function($slideshow, $control) {
-						$container = $slideshow.data('rsf_slideshow').settings.controls.container.get($slideshow);
+						var $container = 
+							$slideshow.data('rsf_slideshow').settings.controls.container.get($slideshow);
 						$container.append($control);
 					},
 					get: function($slideshow) {
@@ -920,11 +930,12 @@
 				},
 				previousSlide: {
 					generate: function($slideshow) {
-						return $('<a href="#" class="rs-prev" data-control-for="' 
-								 + $slideshow.attr('id') + '">&lt;</a>');
+						return $('<a href="#" class="rs-prev" data-control-for="' + 
+								 $slideshow.attr('id') + '">&lt;</a>');
 					},
 					place: function($slideshow, $control) {
-						$container = $slideshow.data('rsf_slideshow').settings.controls.container.get($slideshow);
+						var $container = 
+							$slideshow.data('rsf_slideshow').settings.controls.container.get($slideshow);
 						$container.append($control);
 					},
 					get: function($slideshow) {
@@ -935,11 +946,12 @@
 				},
 				nextSlide: {
 					generate: function($slideshow) {
-						return $('<a href="#" class="rs-next" data-control-for="' 
-								 + $slideshow.attr('id') + '">&gt;</a>');
+						return $('<a href="#" class="rs-next" data-control-for="' + 
+								 $slideshow.attr('id') + '">&gt;</a>');
 					},
 					place: function($slideshow, $control) {
-						$container = $slideshow.data('rsf_slideshow').settings.controls.container.get($slideshow);
+						var $container = 
+							$slideshow.data('rsf_slideshow').settings.controls.container.get($slideshow);
 						$container.append($control);
 					},
 					get: function($slideshow) {
@@ -962,14 +974,15 @@
 							if (i === $slideshow.rsfSlideshow('currentSlideKey')) {
 								$link.addClass('rs-active');
 							}
-							$li = $('<li></li>');
+							var $li = $('<li></li>');
 							$li.append($link);
 							$indexControl.append($li);
 						}
 						return $indexControl;
 					},
 					place: function($slideshow, $control) {
-						$container = $slideshow.data('rsf_slideshow').settings.controls.container.get($slideshow);
+						var $container = 
+							$slideshow.data('rsf_slideshow').settings.controls.container.get($slideshow);
 						$container.append($control);
 					},
 					get: function($slideshow) {
@@ -979,8 +992,8 @@
 						return $('.rs-index[data-control-for="' + $slideshow.attr('id') + '"]');
 					},
 					getSingleByKey: function($slideshow, slide_key) {
-						return $('.rs-index[data-control-for="' + $slideshow.attr('id') 
-								+ '"][data-slide-key="' + slide_key + '"]');
+						return $('.rs-index[data-control-for="' + 
+								$slideshow.attr('id') + '"][data-slide-key="' + slide_key + '"]');
 					},
 					getSlideKey: function($controlItem) {
 						return $controlItem.attr('data-slide-key');
