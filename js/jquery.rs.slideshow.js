@@ -1,5 +1,5 @@
 /**
-*	Really Simple™ Slideshow jQuery plug-in 1.4.1
+*	Really Simple™ Slideshow jQuery plug-in 1.4.2
 *	---------------------------------------------------------
 *	Load slideshow images dynamically, instead of all at once
 *	---------------------------------------------------------
@@ -80,6 +80,7 @@
 						loaded_imgs: [],
 						queued: 0
 					});	
+					data = $slideshow.data('rsf_slideshow');
 				}
 				settings = data.settings;
 				
@@ -417,8 +418,12 @@
 			newImg.src = slide.url;
 			
 			var whenLoaded = function(img) {
-				var width = img.width;
-				var height = img.height;
+				var $img = $(img);
+				$img.addClass('rsf-slideshow-image');
+				$slideshow.prepend($img);
+				var width = $img.outerWidth();
+				var height = $img.outerHeight();
+				$img.detach();
 				if (!width || !height) {
 					setTimeout(function() {$slideshow.rsfSlideshow('showSlide', slide, _queue_id); }, 200);
 					return;
@@ -427,21 +432,12 @@
 					data.loaded_imgs.push(slide.url);
 				}
 				RssPrivateMethods._trigger($slideshow, 'rsImageReady');
-				$(img).addClass('rsf-slideshow-image');
-				$slideshow.prepend($(img));
-				width = $(img).outerWidth();
-				height = $(img).outerHeight();
-				$(img).detach();
 				var leftOffset = Math.ceil((containerWidth / 2) - (width / 2));
 				var topOffset = Math.ceil((containerHeight / 2) - (height / 2));
-				$(img).css({left: leftOffset});
-				$(img).css({top: topOffset});
-				var $img;
+				$img.css({left: leftOffset});
+				$img.css({top: topOffset});
 				if (slide.link_to) {
-					$img = $('<a href="' + slide.link_to + '"></a>').append($(img));
-				}
-				else {
-					$img = $(img);
+					$img = $('<a href="' + slide.link_to + '"></a>').append($img);
 				}
 				var $slideEl = $('<div></div>');
 				$slideEl.addClass(data.settings.slide_container_class);

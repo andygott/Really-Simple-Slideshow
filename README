@@ -16,6 +16,11 @@ http://reallysimpleworks.com/slideshow
 Change Log
 ==========
 
+Version 1.4.2 -- 12 May 2011
+---------------------------
+* Fixed fatal bug introduced in previous update.
+* Improved image width detection to fix occasional image positioning bug in certain browsers.
+
 Version 1.4.1 -- 12 May 2011
 ---------------------------
 * Renamed the 'private' object to 'RssPrivateMethods' to avoid problems with the global namespace.
