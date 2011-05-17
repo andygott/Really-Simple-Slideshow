@@ -1,5 +1,5 @@
 /**
-*	Really Simple™ Slideshow jQuery plug-in 1.4.2
+*	Really Simple™ Slideshow jQuery plug-in 1.4.3
 *	---------------------------------------------------------
 *	Load slideshow images dynamically, instead of all at once
 *	---------------------------------------------------------
@@ -909,8 +909,10 @@
 			controls: {
 				playPause: {
 					generate: function($slideshow) {
-						return $('<a href="#" class="rs-play-pause" data-control-for="' + 
-								 $slideshow.attr('id') + '">Pause</a>');
+						return $('<a href="#" class="rs-play-pause ' + 
+								 $slideshow.data('rsf_slideshow').settings.controls.playPause.paused_class + 
+								 '" data-control-for="' + 
+								 $slideshow.attr('id') + '">Play</a>');
 					},
 					place: function($slideshow, $control) {
 						var $container = 

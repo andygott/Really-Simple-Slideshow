@@ -16,6 +16,10 @@ http://reallysimpleworks.com/slideshow
 Change Log
 ==========
 
+Version 1.4.3 -- 17 May 2011
+---------------------------
+* Fixed bug causing the play/pause control to start in the "playing" state when the autostart setting is set to false.
+
 Version 1.4.2 -- 12 May 2011
 ---------------------------
 * Fixed fatal bug introduced in previous update.
