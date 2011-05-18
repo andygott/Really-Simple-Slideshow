@@ -323,7 +323,6 @@
 			
 			var self = this;
 			$cntnr.children(options.slide_data_container).each(function() {
-				//var slide = $(self).rsfSlideshow('_findData', $(this), options.slide_data_selectors);
 				var slide = RssPrivateMethods._findData($(this), options.slide_data_selectors);
 				$(self).rsfSlideshow('addSlides', slide);
 			});
@@ -631,7 +630,7 @@
 			var slide_attr;
 			for (var key in slide_data_selectors) {
 				if (slide_data_selectors.hasOwnProperty(key)) {
-					var $slideDataClone = $.extend(true, {}, $slideData);
+					var $slideDataClone = $slideData.clone();
 					if (slide_data_selectors[key].selector) {
 						$slideDataClone = $slideDataClone.children(slide_data_selectors[key].selector);
 					}
