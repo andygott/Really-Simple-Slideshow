@@ -16,6 +16,10 @@ http://reallysimpleworks.com/slideshow
 Change Log
 ==========
 
+Version 1.4.4 -- 18 May 2011
+---------------------------
+* Fixed bug causing fatal "Object doesn't support this..." error in IE 6/7/8. 
+
 Version 1.4.3 -- 17 May 2011
 ---------------------------
 * Fixed bug causing the play/pause control to start in the "playing" state when the autostart setting is set to false.
