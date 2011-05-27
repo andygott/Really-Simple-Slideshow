@@ -442,7 +442,7 @@
 				$slideEl.addClass(data.settings.slide_container_class);
 				$slideEl.append($img).css('display', 'none');
 				if (slide.caption) {
-					var $capt = $('<span>' + slide.caption + '</span>');
+					var $capt = $('<div>' + slide.caption + '</div>');
 					$capt.addClass(data.settings.slide_caption_class);
 					$capt.appendTo($slideEl);
 				}
@@ -638,7 +638,7 @@
 						slide_attr = $slideDataClone.attr(slide_data_selectors[key].attr);
 					}
 					else {
-						slide_attr = $slideDataClone.text();
+						slide_attr = $slideDataClone.html();
 					}
 					slide[key] = slide_attr;
 				}

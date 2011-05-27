@@ -16,6 +16,13 @@ http://reallysimpleworks.com/slideshow
 Change Log
 ==========
 
+Version 1.4.5 -- 27 May 2011
+---------------------------
+* Added HTML cpations demo.
+* Accommodated for HTML cpations.
+* Changed caption container element from span to div.
+* Removed the broken controlsdemo.html
+
 Version 1.4.4 -- 18 May 2011
 ---------------------------
 * Fixed bug causing fatal "Object doesn't support this..." error in IE 6/7/8. 
