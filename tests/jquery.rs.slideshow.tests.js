@@ -9,6 +9,7 @@ $(document).ready(function() {
 	/**
 	*	getSlideData
 	*/
+	module("getSlideData");
 	
 	test("getSlideData()", function() {							
 		$('.rs-slideshow').rsfSlideshow();
@@ -33,6 +34,7 @@ $(document).ready(function() {
 	/**
 	*	removeSlides
 	*/
+	module("removeSlides");
 	
 	test("removeSlides()", function() {	
 		$('.rs-slideshow').rsfSlideshow();
@@ -74,6 +76,28 @@ $(document).ready(function() {
 		equal($('#slideshow').data('rsf_slideshow').slides.length, 3);
 		$('#slideshow').rsfSlideshow('removeSlides', [0,0,0]);
 		equal($('#slideshow').data('rsf_slideshow').slides.length, 2);
+	});
+
+		module("Slide Markup");
+
+	test("Image Alt & Title", 2, function(){
+		stop();
+		$('.rs-slideshow').rsfSlideshow({
+	      slide_data_selectors: {
+	        url: {selector: 'a', attr: 'href'},
+	        caption: {selector: 'a', attr: 'title'},
+	        link_to: {selector: 'a', attr: 'data-link-to'},
+	        effect: {selector: 'a', attr: 'data-effect'},
+	        image_title: {selector: 'a', attr: 'data-image-title'},
+	        image_alt: {selector: 'a', attr: 'data-image-alt'}
+	      }
+	    }
+		).rsfSlideshow('goToSlide', 2).bind('rsPostTransition', function() {
+		 	img = $('.slide-container img');
+		 	equal(img.attr('alt'), 'The last image in a slideshow demo');
+		 	equal(img.attr('title'), 'This is the last slide');
+		 	start();
+		});
 	});
 						   
 });
