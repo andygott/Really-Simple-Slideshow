@@ -435,6 +435,14 @@
 				var topOffset = Math.ceil((containerHeight / 2) - (height / 2));
 				$img.css({left: leftOffset});
 				$img.css({top: topOffset});
+
+				if (slide.image_title){
+          $img.attr('title', slide.image_title);
+        }
+        if (slide.image_alt){
+          $img.attr('alt', slide.image_alt);
+        }
+
 				if (slide.link_to) {
 					$img = $('<a href="' + slide.link_to + '"></a>').append($img);
 				}
