@@ -1,5 +1,5 @@
 /**
-*	Really Simple™ Slideshow jQuery plug-in 1.4.5
+*	Really Simple™ Slideshow jQuery plug-in 1.4.6
 *	---------------------------------------------------------
 *	Load slideshow images dynamically, instead of all at once
 *	---------------------------------------------------------
@@ -437,11 +437,11 @@
 				$img.css({top: topOffset});
 
 				if (slide.image_title){
-          $img.attr('title', slide.image_title);
-        }
-        if (slide.image_alt){
-          $img.attr('alt', slide.image_alt);
-        }
+          			$img.attr('title', slide.image_title);
+				}
+				if (slide.image_alt){
+					$img.attr('alt', slide.image_alt);
+				}
 
 				if (slide.link_to) {
 					$img = $('<a href="' + slide.link_to + '"></a>').append($img);

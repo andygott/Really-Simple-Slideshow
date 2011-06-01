@@ -78,7 +78,7 @@ $(document).ready(function() {
 		equal($('#slideshow').data('rsf_slideshow').slides.length, 2);
 	});
 
-		module("Slide Markup");
+	module("Slide Markup");
 
 	test("Image Alt & Title", 2, function(){
 		stop();
