@@ -26,7 +26,7 @@
 }
 
 .rs-slideshow .slide-container img {
-	position: absolute;
+	position: relative;
 }
 
 .rs-slideshow .slide-container .slide-caption {
@@ -39,7 +39,6 @@
 	position: absolute;
 	text-align: center;
 	right: 0;
-	/*width: 100%;*/
 	filter: alpha(opacity=70); /* internet explorer */
 	-khtml-opacity: 0.7;      /* khtml, old safari */
 	-moz-opacity: 0.7;       /* mozilla, netscape */
@@ -54,7 +53,6 @@
 .rs-slideshow .slide-container .slide-caption,
 .rs-slideshow .slide-container a {
 	filter: inherit;
-	opacity: inherit;
 }
 
 
