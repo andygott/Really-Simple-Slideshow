@@ -716,11 +716,9 @@
 		*/
 		
 		_transitionWith: function($slideshow, $slide, effect) {
-			var data = $slideshow.data('rsf_slideshow');
-			var $previousSlide 
-				= $slideshow.children('div.' + data.settings.slide_container_class + ':first');
-			
-			var effect_iteration = 'random';
+			var data = $slideshow.data('rsf_slideshow'),
+				effect_iteration = 'random';
+				
 			if (typeof effect === 'object' && effect.iteration && effect.effects) {
 				effect_iteration = effect.iteration;
 				effect = effect.effects;
@@ -756,37 +754,6 @@
 			typeof($.rsfSlideshow.transitions[effect]) === 'function') {
 				$.rsfSlideshow.transitions[effect]($slideshow, $slide);
 			}
-			
-			
-			/*
-			var left_offset, top_offset;
-			switch (effect) {
-				case 'none': 
-					$slide.css('display', 'block');
-					RssPrivateMethods._endTransition($slideshow);
-					break;
-				case 'fade': 
-					$slide.fadeIn(data.settings.transition, function() {
-						RssPrivateMethods._endTransition($slideshow);
-					});
-					break;
-				case 'slideLeft': 
-					left_offset = $slide.outerWidth();
-					RssPrivateMethods._doSlide($slideshow, $slide, $previousSlide, left_offset, 0);
-					break;
-				case 'slideRight': 
-					left_offset = (0 - $slide.outerWidth());
-					RssPrivateMethods._doSlide($slideshow, $slide, $previousSlide, left_offset, 0);
-					break;
-				case 'slideUp': 
-					top_offset = $slide.outerHeight();
-					RssPrivateMethods._doSlide($slideshow, $slide, $previousSlide, 0, top_offset);
-					break;
-				case 'slideDown': 
-					top_offset = (0 - $slide.outerHeight());
-					RssPrivateMethods._doSlide($slideshow, $slide, $previousSlide, 0, top_offset);
-					break;
-			}*/
 		},
 		
 		
@@ -804,8 +771,9 @@
 		*		the top start position of the incoming slide in pixels
 		*/
 		
-		_doSlide: function($slideshow, $slide, $previousSlide, left_offset, top_offset) {
-			var data = $slideshow.data('rsf_slideshow');
+		_doSlide: function($slideshow, $slide, left_offset, top_offset) {
+			var data = $slideshow.data('rsf_slideshow'),
+				$prevSlide = $slide.prev();
 			$slide.css({top: top_offset, left: left_offset});
 			$slide.css('display', 'block');
 			
@@ -814,11 +782,11 @@
 				data.settings.transition, 
 				data.settings.easing, 
 				function() {
-					RssPrivateMethods._endTransition($slideshow);
+					RssPrivateMethods._endTransition($slideshow, $slide);
 				}
 			);
 			
-			$previousSlide.stop().animate(
+			$prevSlide.stop().animate(
 				{top: (0 - top_offset), left: (0 - left_offset)},
 				data.settings.transition, 
 				data.settings.easing
@@ -855,14 +823,14 @@
 			}
 			if (timeout && time > timeout) {
 				$img.detach();
-				if (failure && typeof(failure) === 'function') {
-					failure(timeout, time);
+				if (onTimeout && typeof(onTimeout) === 'function') {
+					onTimeout(timeout, time);
 				}
 				return false;
 			}
 			time += 200;
 			setTimeout(function() {
-				RssPrivateMethods._getImageDimensions($slideshow, $img, callback, timeout, onTimeout, time); 
+				RssPrivateMethods._getImageDimensions($slideshow, $img, sucesss, timeout, onTimeout, time); 
 			}, 200);
 		},
 		
@@ -872,9 +840,10 @@
 		*		the slideshow
 		*/
 		
-		_endTransition: function($slideshow) {
-			var data = $slideshow.data('rsf_slideshow');
-			$slideshow.children('div.' + data.settings.slide_container_class + ':not(:last-child)').remove();
+		_endTransition: function($slideshow, $slide) {
+			/*var data = $slideshow.data('rsf_slideshow');
+			$slideshow.children('div.' + data.settings.slide_container_class + ':not(:last-child)').remove();*/
+			$slide.prev().remove();
 			RssPrivateMethods._trigger($slideshow, 'rsPostTransition');
 			if ($slideshow.rsfSlideshow('currentSlideKey') === $slideshow.rsfSlideshow('totalSlides') - 1) {
 				RssPrivateMethods._trigger($slideshow, 'rsLastSlide');
@@ -1120,28 +1089,24 @@
 				$slide.fadeIn(
 					$slideshow.data('rsf_slideshow').settings.transition, 
 					function() {
-						RssPrivateMethods._endTransition($slideshow);
+						RssPrivateMethods._endTransition($slideshow, $slide);
 					});
 			},
 			slideLeft: function($slideshow, $slide) {
-				var $prevSlide = $slide.prev(),
-					left_offset = $slide.outerWidth();
-				RssPrivateMethods._doSlide($slideshow, $slide, $prevSlide, left_offset, 0);
+				var left_offset = $slide.outerWidth();
+				RssPrivateMethods._doSlide($slideshow, $slide, left_offset, 0);
 			},
 			slideRight: function($slideshow, $slide) {
-				var $prevSlide = $slide.prev(),
-					left_offset = 0 - $slide.outerWidth();
-				RssPrivateMethods._doSlide($slideshow, $slide, $prevSlide, left_offset, 0);
+				var left_offset = 0 - $slide.outerWidth();
+				RssPrivateMethods._doSlide($slideshow, $slide, left_offset, 0);
 			},
 			slideUp: function($slideshow, $slide) {
-				var $prevSlide = $slide.prev(),
-					top_offset = $slide.outerHeight();
-				RssPrivateMethods._doSlide($slideshow, $slide, $prevSlide, 0, top_offset);
+				var top_offset = $slide.outerHeight();
+				RssPrivateMethods._doSlide($slideshow, $slide, 0, top_offset);
 			},
 			slideDown: function($slideshow, $slide) {
-				var $prevSlide = $slide.prev(),
-					top_offset = 0 - $slide.outerHeight();
-				RssPrivateMethods._doSlide($slideshow, $slide, $prevSlide, 0, top_offset);
+				var top_offset = 0 - $slide.outerHeight();
+				RssPrivateMethods._doSlide($slideshow, $slide, 0, top_offset);
 			}
 		}
 		
