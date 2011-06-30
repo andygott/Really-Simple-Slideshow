@@ -399,81 +399,58 @@
 		*	slide object
 		*/
 	
-		showSlide: function(slide, _queue_id) {
+		showSlide: function(slide) {
 			var $slideshow = this,
-				data =  $slideshow.data('rsf_slideshow');
-			if (!_queue_id) {
-				data.queued += 1;
-				_queue_id = data.queued;
-				RssPrivateMethods._trigger($slideshow, 'rsPreTransition');
-			}
-			else if (_queue_id !== data.queued) {
-				return;
-			}
-			var containerWidth = $slideshow.width();
-			var containerHeight = $slideshow.height();
+				data =  $slideshow.data('rsf_slideshow'),
+				containerWidth = $slideshow.width(),
+				containerHeight = $slideshow.height();
+			RssPrivateMethods._trigger($slideshow, 'rsPreTransition');
 			$slideshow.children('img:first').css('z-index', 0);
-			var newImg = new Image();
-			newImg.src = slide.url;
 			
 			var whenLoaded = function(img) {
 				var $img = $(img);
 				$img.addClass('rsf-slideshow-image');
-				$slideshow.prepend($img);
-				var width = $img.outerWidth();
-				var height = $img.outerHeight();
-				$img.detach();
-				if (!width || !height) {
-					setTimeout(function() {$slideshow.rsfSlideshow('showSlide', slide, _queue_id); }, 200);
-					return;
-				}
-				if ($.inArray(slide.url, data.loaded_imgs) < 0) {
-					data.loaded_imgs.push(slide.url);
-				}
-				RssPrivateMethods._trigger($slideshow, 'rsImageReady');
-				var leftOffset = Math.ceil((containerWidth / 2) - (width / 2));
-				var topOffset = Math.ceil((containerHeight / 2) - (height / 2));
-				$img.css({left: leftOffset});
-				$img.css({top: topOffset});
-
-				if (slide.image_title){
-          			$img.attr('title', slide.image_title);
-				}
-				if (slide.image_alt){
-					$img.attr('alt', slide.image_alt);
-				}
-
-				if (slide.link_to) {
-					$img = $('<a href="' + slide.link_to + '"></a>').append($img);
-				}
-				var $slideEl = $('<div></div>');
-				$slideEl.addClass(data.settings.slide_container_class);
-				$slideEl.append($img).css('display', 'none');
-				if (slide.caption) {
-					var $capt = $('<div>' + slide.caption + '</div>');
-					$capt.addClass(data.settings.slide_caption_class);
-					$capt.appendTo($slideEl);
-				}
-				var effect = data.settings.effect;
-				if (slide.effect) {
-					effect = slide.effect;
-				}
-				$slideEl.appendTo($slideshow);
-				RssPrivateMethods._transitionWith($slideshow, $slideEl, effect);
-				return true;
+				var whenDimensions = function(width, height) {
+					RssPrivateMethods._trigger($slideshow, 'rsImageReady');
+					var leftOffset = Math.ceil((containerWidth / 2) - (width / 2));
+					var topOffset = Math.ceil((containerHeight / 2) - (height / 2));
+					$img.css({left: leftOffset});
+					$img.css({top: topOffset});
+					if (slide.image_title){
+						$img.attr('title', slide.image_title);
+					}
+					if (slide.image_alt){
+						$img.attr('alt', slide.image_alt);
+					}
+					if (slide.link_to) {
+						$img = $('<a href="' + slide.link_to + '"></a>').append($img);
+					}
+					var $slideEl = $('<div></div>');
+					$slideEl.addClass(data.settings.slide_container_class);
+					$slideEl.append($img).css('display', 'none');
+					if (slide.caption) {
+						var $capt = $('<div>' + slide.caption + '</div>');
+						$capt.addClass(data.settings.slide_caption_class);
+						$capt.appendTo($slideEl);
+					}
+					var effect = data.settings.effect;
+					if (slide.effect) {
+						effect = slide.effect;
+					}
+					$slideEl.appendTo($slideshow);
+					RssPrivateMethods._transitionWith($slideshow, $slideEl, effect);
+					return true;
+				};
+				RssPrivateMethods._getImageDimensions(
+					$slideshow, 
+					$img, 
+					whenDimensions, 
+					data.settings.interval / 2);	
 			};
 			
-			if ($.inArray(slide.url, data.loaded_imgs) < 0) {
-				if (newImg.width) {
-					whenLoaded(newImg);
-				}
-				else {
-					$(newImg).bind('load', function() {whenLoaded(newImg); });
-				}
-			}
-			else {
-				whenLoaded(newImg);
-			}
+			var newImg = new Image();
+			$(newImg).bind('load', function() {whenLoaded(this); });
+			newImg.src = slide.url;
 			
 			return this;
 		},
@@ -788,6 +765,33 @@
 			);
 		},
 		
+		
+		/**
+		*	Handles finding the image dimensions
+		*	Takes jQuery objects for the slideshow and image,
+		*	and rund the callback once the width and height are found.
+		*	timeout (optional) is is the time after which to stop trying.
+		*/
+		
+		_getImageDimensions: function($slideshow, $img, callback, timeout, time) {
+			if (!time) {
+				time = 0;	
+			}
+			$slideshow.prepend($img);
+			var width = $img.outerWidth();
+			var height = $img.outerHeight();
+			if (width && height) {
+				$img.detach();
+				callback(width, height);
+				return;
+			}
+			if (timeout && time > timeout) {
+				time += 200;
+				setTimeout(function() {
+					RssPrivateMethods._getImageDimensions($slideshow, $img, callback, timeout, time); 
+				}, 200);
+			}
+		},
 		
 		/**
 		*	Anything that needs to be done after a transition ends
