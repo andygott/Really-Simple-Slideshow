@@ -130,11 +130,11 @@
 		
 		/**
 		*	Add slide data to the slideshow
-		*	slides is either a slide object, or an array of slide objects
-		*	A slide object has one to three elements:
-		*		url: the URL of the image to load
-		*		(optional) caption: caption text for the slide
-		*		(optional) link_url: a URL to link the image to when clicked
+		*	@param slides (required) object, array or string
+		*		a string containing the URL of the slide image or
+		*		a slide object containing the properties for a single 
+		*		slide (see docs) or
+		*		an array of slide objects
 		*/
 		
 		addSlides: function(slides) {
@@ -152,8 +152,10 @@
 		
 		/**
 		*	Remove slide(s) from the slideshow
-		*	slide_keys is optional and can be an integer or
-		*	and array of integers.
+		*	@param slide_keys (optional) array or integer
+		*		an array of slide indices to remove from the slides array or
+		*		a single slide index as an integer
+		*		if not set, the whole slides array is emptied
 		*/
 		
 		removeSlides: function(slide_keys) {
@@ -185,6 +187,8 @@
 		/**
 		*	Returns a slide data object by key, or the
 		*	entire slides array if a key is not specified
+		*	@param key (optional) integer
+		*		the index of a slide in the slide array
 		*/
 		
 		getSlideData: function(key) {
@@ -200,10 +204,11 @@
 		
 		/**
 		*	Start the slideshow
-		*	interval is the duration for which each slide is
-		*	shown in seconds
-		*	instant is an optional flag: if true, the first transition
-		*	is triggered with no interval
+		*	@param interval (optional) integer or float
+		*		the duration for which each slide is displayed
+		*		if set, this overrides the options setting
+		*	@param instant (optional) boolean
+		*		if true, the first transition is triggered immediately
 		*/
 		
 		startShow: function(interval, instant) {
@@ -241,7 +246,9 @@
 		
 		
 		/**
-		*	Convenience method for toggling startShow and stopShow
+		*	Toggle the slideshow 
+		*	calls startShow if the slideshow is stopped 
+		*	and stopShow if it is running
 		*/
 		
 		toggleShow: function() {
@@ -290,6 +297,12 @@
 		
 		/**
 		*	Find slide data in the markup and add to the slides array
+		*	@param options (optional) object
+		*		an object containing options to override default settings for:
+		*			data_container
+		*			slide_data_container
+		*			slide_data_selectors
+		*			(see default options and docs)
 		*/
 		
 		getSlidesFromMarkup: function(options) {
@@ -382,6 +395,8 @@
 		
 		/**
 		*	Load and transition into the slide with the provided key
+		*	@params key (required) integer
+		*		the array index of a slide object in the slides array
 		*/
 		
 		goToSlide: function(key) {
@@ -395,8 +410,9 @@
 		
 		
 		/**
-		*	Load and transition into the provided
-		*	slide object
+		*	Load and transition into the provided slide object
+		*	@param slide (required) object
+		*		a slide object (see docs)
 		*/
 	
 		showSlide: function(slide) {
@@ -466,6 +482,8 @@
 		
 		/**
 		*	Generate, place and bind a control for the slideshow
+		*	@param type (required) string
+		*		this must refer to a property of the control option (see options and docs)
 		*/
 		
 		addControl: function(type) {
@@ -483,7 +501,8 @@
 		
 		/*
 		*	Play/ Pause toggle control
-		*	$playPause (required) is a jQuery object of elements to apply play/pause functionality to
+		*	@param $playPause (required) jQuery object 
+		*		elements to apply play/pause functionality to
 		*/
 		
 		bindPlayPause: function($playPause) {
@@ -500,9 +519,11 @@
 		
 		/**
 		*	Previous slide control
-		*	$prev (required) is a jQuery object of elements to apply "previous slide" functionality to
-		*	If stop_show is true, the slideshow is stopped when the control is clicked
-		*		if not provided the global setting is used
+		*	@param $prev (required) jQuery object 
+		*		elements to apply "previous slide" functionality to
+		*	@param stop_show (optional) boolean
+		*		if true, the slideshow is stopped when the control is clicked
+		*		if not provided the global/options setting is used
 		*/
 		
 		bindPreviousSlide: function($prev, autostop) {
@@ -525,9 +546,11 @@
 		
 		/**
 		*	Next slide control
-		*	$next (required) is a jQuery object of elements to apply "next slide" functionality to
-		*	If stop_show is true, the slideshow is stopped when the control is clicked
-		*		if not provided the global setting is used
+		*	$next (required) jQuery object 
+		*		elements to apply "next slide" functionality to
+		*	@param stop_show (optional) boolean
+		*		if true, the slideshow is stopped when the control is clicked
+		*		if not provided the global/options setting is used
 		*/
 		
 		bindNextSlide: function($next, autostop) {
@@ -606,8 +629,15 @@
 	var RssPrivateMethods = {
 		
 		/**
-		*	Private method for iterating through data selectors 
+		*	Iterating through slide data selectors 
 		*	to find data for a single slide
+		*	@param $slideData (required) jQuery object
+		*		jQuery object containing the DOM element 
+		*		containing data for a single slide (with 
+		*		default settings this is a <li> element)
+		*	@param slide_data_selectors (required) object
+		*		information about where each slide property 
+		*		be found (see docs)
 		*/
 		
 		_findData: function($slideData, slide_data_selectors) {
@@ -634,8 +664,13 @@
 		
 		/**
 		*	Private method for adding a single slide object
-		*	to the slides array. This should not be used directly
-		*	as the addSlides() method should be used instead.
+		*	@param $slideshow (required) jQuery object 
+		*		the slideshow
+		*	@param slide (required) string or object 
+		*		the URL of the slide image as a string or
+		*		the slide data as a slide object (see docs)
+		*	This should not be used directly, the public 
+		*	addSlides() method should be used instead.
 		*/
 		
 		_addSlide: function($slideshow, slide) {
@@ -657,6 +692,8 @@
 		
 		/**
 		*	Remove a single slide from the slides array
+		*	@param $slideshow (required) jQuery object 
+		*		the slideshow
 		*/
 		
 		_removeSlide: function($slideshow, key) {
@@ -665,7 +702,14 @@
 		
 		
 		/**
-		*	Transition effects
+		*	Perform a transition with a specified effect
+		*	@param $slideshow (required) jQuery object 
+		*		the slideshow
+		*	@param $slide (required) jQuery object 
+		*		the incoming slide container
+		*	@param effect (required) string or object
+		*		the transition effect name as a string or
+		*		a transition effect object (see docs)
 		*/
 		
 		_transitionWith: function($slideshow, $slide, effect) {
@@ -742,6 +786,16 @@
 		
 		/**
 		*	Perform slide animation
+		*	@param $slideshow (required) jQuery object 
+		*		the slideshow
+		*	@param $slide (required) jQuery object 
+		*		the incoming slide container
+		*	@param $previousSlide (required) jQuery object 
+		*		the outgoing slide container
+		*	@param left_offset (required) integer
+		*		the left start position of the incoming slide in pixels
+		*	@param left_offset (required) integer
+		*		the top start position of the incoming slide in pixels
 		*/
 		
 		_doSlide: function($slideshow, $slide, $previousSlide, left_offset, top_offset) {
@@ -768,9 +822,13 @@
 		
 		/**
 		*	Handles finding the image dimensions
-		*	Takes jQuery objects for the slideshow and image,
-		*	and rund the callback once the width and height are found.
-		*	timeout (optional) is is the time after which to stop trying.
+		*	@param $slideshow (required) jQuery object 
+		*		the slideshow
+		*	@param $img (required) jQuery object 
+		*		the loaded image
+		*	@param timeout (optional) integer 
+		*		the time after which the method will stop trying
+		*		to find the image dimensions
 		*/
 		
 		_getImageDimensions: function($slideshow, $img, callback, timeout, time) {
@@ -795,6 +853,8 @@
 		
 		/**
 		*	Anything that needs to be done after a transition ends
+		*	@param $slideshow (required) jQuery object 
+		*		the slideshow
 		*/
 		
 		_endTransition: function($slideshow) {
@@ -813,6 +873,8 @@
 		/**
 		*	Bind event handlers for adding and remving a class to index elements
 		*	according to the current slide key
+		*	@param $slideshow (required) jQuery object 
+		*		the slideshow
 		*/
 		
 		_bindActiveIndex: function($slideshow) {
@@ -827,6 +889,8 @@
 		
 		/**
 		*	check for controls container and generate if not present
+		*	@param $slideshow (required) jQuery object 
+		*		the slideshow
 		*/
 		
 		_controlsContainer: function($slideshow) {
@@ -840,6 +904,12 @@
 		
 		/**
 		*	Wrapper for triggering slideshow events
+		*	@param $slideshow (required) jQuery object 
+		*		the slideshow
+		*	@param e (required) string
+		*		the custom event name
+		*	@param event_data (optional) object
+		*		addional data to pass to event handlers
 		*/
 		
 		_trigger: function($slideshow, e, event_data) {
@@ -856,9 +926,9 @@
   
   
 	/**
-	*		Default options
-	*		Any default options can be set directly by accessing 
-	*		the $.rsfSlideshow.defaults hash
+	*	Default options
+	*	Any default options can be set directly by accessing 
+	*	the $.rsfSlideshow.defaults hash
 	*/
 	
 	$.rsfSlideshow = {
