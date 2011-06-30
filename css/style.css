@@ -50,6 +50,13 @@
 	display: none;
 }
 
+.rs-slideshow .slide-container img,
+.rs-slideshow .slide-container .slide-caption,
+.rs-slideshow .slide-container a {
+	filter: inherit;
+	opacity: inherit;
+}
+
 
 /**
 *	These styles make the list of links to slide images visible to users
