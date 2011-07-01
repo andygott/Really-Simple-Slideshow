@@ -16,7 +16,15 @@ http://reallysimpleworks.com/slideshow
 Change Log
 ==========
 
-Version 1.4.6 -- 1 Mar 2011
+Version 1.4.7 -- 30 Jun 2011
+---------------------------
+* Improved the handling of the removal of outgoing slide elements.
+* Moved all transition effects into the $.refSlideshow.transitions object, allowing for extension of the slideshow effects.
+* Improved the code documentation in the non-minified version of the plugin code.
+* BUG FIX: Added an asynchronous method for determining image dimensions, which prevent an occasional race condition in Chrome.
+* Added a CSS rule to fix the broken fade transition effect in IE8.
+
+Version 1.4.6 -- 1 Jun 2011
 ---------------------------
 * Added support for optional image alt and title parameters (requires custom options).
 
