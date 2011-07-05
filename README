@@ -16,6 +16,11 @@ http://reallysimpleworks.com/slideshow
 Change Log
 ==========
 
+Version 1.4.8 -- 5 Jul 2011
+---------------------------
+* All public methods now return a jQuery collection (unless they return specific data).
+* QUnit test suite updated to include tests for all public methods.
+
 Version 1.4.7 -- 30 Jun 2011
 ---------------------------
 * Improved the handling of the removal of outgoing slide elements.
