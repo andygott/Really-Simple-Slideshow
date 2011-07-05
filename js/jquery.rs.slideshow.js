@@ -362,20 +362,21 @@
 		*/
 		
 		nextSlide: function() {
-			var data = this.data('rsf_slideshow');
-			data.this_slide ++;
-			if (data.this_slide >= data.slides.length) {
-				if (data.settings.loop) {
-					data.this_slide = 0;
+			return this.each(function() {
+				var data = $(this).data('rsf_slideshow');
+				data.this_slide ++;
+				if (data.this_slide >= data.slides.length) {
+					if (data.settings.loop) {
+						data.this_slide = 0;
+					}
+					else {
+						data.this_slide = data.slides.length - 1;
+						$(this).rsfSlideshow('stopShow');
+						return true;
+					}
 				}
-				else {
-					data.this_slide = data.slides.length - 1;
-					this.rsfSlideshow('stopShow');
-					return this;
-				}
-			}
-			this.rsfSlideshow('showSlide', data.slides[data.this_slide]);
-			return this;
+				$(this).rsfSlideshow('showSlide', data.slides[data.this_slide]);
+			});
 		},
 		
 		
@@ -384,20 +385,21 @@
 		*/
 		
 		previousSlide: function() {
-			var data = this.data('rsf_slideshow');
-			data.this_slide --;
-			if (data.this_slide < 0) {
-				if (data.settings.loop) {
-					data.this_slide = data.slides.length - 1;
+			return this.each(function() {
+				var data = $(this).data('rsf_slideshow');
+				data.this_slide --;
+				if (data.this_slide < 0) {
+					if (data.settings.loop) {
+						data.this_slide = data.slides.length - 1;
+					}
+					else {
+						data.this_slide = 0;
+						$(this).rsfSlideshow('stopShow');
+						return true;
+					}
 				}
-				else {
-					data.this_slide = 0;
-					this.rsfSlideshow('stopShow');
-					return this;
-				}
-			}
-			this.rsfSlideshow('showSlide', data.slides[data.this_slide]);
-			return this;
+				$(this).rsfSlideshow('showSlide', data.slides[data.this_slide]);
+			});
 		},
 		
 		
@@ -408,12 +410,13 @@
 		*/
 		
 		goToSlide: function(key) {
-			var data = this.data('rsf_slideshow');
-			if (typeof data.slides[key] === 'object') {
-				data.this_slide = key;
-				this.rsfSlideshow('showSlide', data.slides[data.this_slide]);
-			}
-			return this;
+			return this.each(function() {
+				var data = $(this).data('rsf_slideshow');
+				if (typeof data.slides[key] === 'object') {
+					data.this_slide = key;
+					$(this).rsfSlideshow('showSlide', data.slides[data.this_slide]);
+				}
+			});
 		},
 		
 		

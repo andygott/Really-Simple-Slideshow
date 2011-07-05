@@ -67,24 +67,7 @@ $(document).ready(function() {
 	});
 	
 	
-	/**
-	*	getSlidesFromMarkup
-	*/
-	module("getSlidesFromMarkup()");
 	
-	test("Without params", function() {	
-		$('.rs-slideshow').rsfSlideshow();
-		$('#slideshow .slides li').each(function(i) {
-			equal(
-				$('#slideshow').data('rsf_slideshow').slides[i].url,
-				$(this).children('a').attr('href')
-			);
-			equal(
-				$('#slideshow').data('rsf_slideshow').slides[i].caption,
-				$(this).children('a').attr('title')
-			);
-		});
-	});
 	
 	
 	/**
@@ -102,7 +85,7 @@ $(document).ready(function() {
 	
 	test("Using slide index", function() {							
 		$('.rs-slideshow').rsfSlideshow({autostart: false});
-		expect($('#slideshow').data('rsf_slideshow').slides.length);
+		expect(3);
 		for (var i = 0, len = $('#slideshow').data('rsf_slideshow').slides.length; i < len; i ++) {
 			deepEqual(
 				$('#slideshow').rsfSlideshow('getSlideData', i),
@@ -119,7 +102,6 @@ $(document).ready(function() {
 	
 	test("Without params", function() {	
 		$('.rs-slideshow').rsfSlideshow({autostart: false});
-		expect(2);
 		equal($('#slideshow').data('rsf_slideshow').slides.length, 3);
 		$('#slideshow').rsfSlideshow('removeSlides');
 		equal($('#slideshow').data('rsf_slideshow').slides.length, 0);
@@ -127,7 +109,6 @@ $(document).ready(function() {
 	
 	test("Using slide index", function() {							
 		$('.rs-slideshow').rsfSlideshow({autostart: false});
-		expect(3);
 		equal($('#slideshow').data('rsf_slideshow').slides.length, 3);
 		$('#slideshow').rsfSlideshow('removeSlides', 1);
 		equal($('#slideshow').data('rsf_slideshow').slides.length, 2);
@@ -137,7 +118,6 @@ $(document).ready(function() {
 	
 	test("Using array: [1,2]", function() {							
 		$('.rs-slideshow').rsfSlideshow({autostart: false});
-		expect(2);
 		equal($('#slideshow').data('rsf_slideshow').slides.length, 3);
 		$('#slideshow').rsfSlideshow('removeSlides', [1,2]);
 		equal($('#slideshow').data('rsf_slideshow').slides.length, 1);
@@ -145,7 +125,6 @@ $(document).ready(function() {
 	
 	test("Using array: [1,1,2]", function() {							
 		$('.rs-slideshow').rsfSlideshow({autostart: false});
-		expect(2);
 		equal($('#slideshow').data('rsf_slideshow').slides.length, 3);
 		$('#slideshow').rsfSlideshow('removeSlides', [1,1,2]);
 		equal($('#slideshow').data('rsf_slideshow').slides.length, 1);
@@ -153,7 +132,6 @@ $(document).ready(function() {
 	
 	test("Using array: [0,0,0]", function() {							
 		$('.rs-slideshow').rsfSlideshow({autostart: false});
-		expect(2);
 		equal($('#slideshow').data('rsf_slideshow').slides.length, 3);
 		$('#slideshow').rsfSlideshow('removeSlides', [0,0,0]);
 		equal($('#slideshow').data('rsf_slideshow').slides.length, 2);
@@ -166,6 +144,7 @@ $(document).ready(function() {
 	module("startShow()");
 	
 	asyncTest("Without params", function(){
+		expect(1);
 		$('.rs-slideshow').rsfSlideshow({
 			autostart: false
 	    }).bind('rsPostTransition', function(e, data) {
@@ -179,6 +158,7 @@ $(document).ready(function() {
 	});
 
 	asyncTest("Using interval", function(){
+		expect(1);
 		$('.rs-slideshow').rsfSlideshow({
 			autostart: false
 	    }).bind('rsPostTransition', function(e, data) {
@@ -191,6 +171,7 @@ $(document).ready(function() {
 	});
 	
 	asyncTest("Using interval & instant flag", function(){
+		expect(1);
 		$('.rs-slideshow').rsfSlideshow({
 			autostart: false
 	    }).bind('rsPostTransition', function(e, data) {
@@ -209,6 +190,7 @@ $(document).ready(function() {
 	module("stopShow()");
 	
 	asyncTest("stopShow()", function(){
+		expect(1);
 		$('.rs-slideshow').rsfSlideshow({
 			autostart: false
 	    }).bind('rsPostTransition', function(e, data) {
@@ -226,6 +208,7 @@ $(document).ready(function() {
 	module("toggleShow(), isRunning()");
 	
 	asyncTest("toggleShow(), isRunning()", function(){
+		expect(2);
 		$('.rs-slideshow').rsfSlideshow().bind('rsPostTransition', function(e, data) {
 			$(this).rsfSlideshow('toggleShow');
 		}).bind('rsStopShow', function(e, data) {
@@ -238,6 +221,72 @@ $(document).ready(function() {
 			$(this).rsfSlideshow('stopShow');
 			start();
 		}).rsfSlideshow('startShow');
+	});
+	
+	
+	/**
+	*	nextSlide(), previousSlide(), goToSlide()
+	*/
+	module("Slide Iteration & Navigation");
+	
+	asyncTest("nextSlide()", function(){
+		expect(2);
+		$('.rs-slideshow').rsfSlideshow({
+			autostart: false
+	    }).bind('rsPostTransition', function(e, data) {
+		 	var $caption = $('.slide-container .slide-caption'),
+				$img = $('.slide-container img');
+			equal($img.attr('src'), '../images/morzine-2011-a.png');
+			equal($caption.html(), 'This is the second slide');
+			start();
+		}).rsfSlideshow('nextSlide');
+	});
+	
+	asyncTest("previousSlide()", function(){
+		expect(2);
+		$('.rs-slideshow').rsfSlideshow({
+			autostart: false
+	    }).bind('rsPostTransition', function(e, data) {
+		 	var $caption = $('.slide-container .slide-caption'),
+				$img = $('.slide-container img');
+			equal($img.attr('src'), '../images/morzine-2011-b.png');
+			equal($caption.html(), 'This is the third slide');
+			start();
+		}).rsfSlideshow('previousSlide');
+	});
+	
+	asyncTest("goToSlide()", function(){
+		expect(2);
+		$('.rs-slideshow').rsfSlideshow({
+			autostart: false
+	    }).bind('rsPostTransition', function(e, data) {
+		 	var $caption = $('.slide-container .slide-caption'),
+				$img = $('.slide-container img');
+			equal($img.attr('src'), '../images/morzine-2011-c.png');
+			equal($caption.html(), 'This is the first slide');
+			start();
+		}).rsfSlideshow('goToSlide', 0);
+	});
+	
+	
+	
+	/**
+	*	getSlidesFromMarkup()
+	*/
+	module("getSlidesFromMarkup()");
+	
+	test("Without params", function() {	
+		$('.rs-slideshow').rsfSlideshow();
+		$('#slideshow .slides li').each(function(i) {
+			equal(
+				$('#slideshow').data('rsf_slideshow').slides[i].url,
+				$(this).children('a').attr('href')
+			);
+			equal(
+				$('#slideshow').data('rsf_slideshow').slides[i].caption,
+				$(this).children('a').attr('title')
+			);
+		});
 	});
 	
 	
