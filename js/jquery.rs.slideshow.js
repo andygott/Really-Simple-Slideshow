@@ -138,15 +138,16 @@
 		*/
 		
 		addSlides: function(slides) {
-			if (slides instanceof Array) {
-				for (var i = 0, len = slides.length; i < len; i ++) {
-					RssPrivateMethods._addSlide(this, slides[i]);
+			return this.each(function() {
+				if (slides instanceof Array) {
+					for (var i = 0, len = slides.length; i < len; i ++) {
+						RssPrivateMethods._addSlide($(this), slides[i]);
+					}
 				}
-			}
-			else {
-				RssPrivateMethods._addSlide(this, slides);
-			}
-			return this;
+				else {
+					RssPrivateMethods._addSlide($(this), slides);
+				}
+			});
 		},
 		
 		
@@ -428,8 +429,14 @@
 				$img.addClass('rsf-slideshow-image');
 				var whenDimensions = function(width, height) {
 					RssPrivateMethods._trigger($slideshow, 'rsImageReady');
-					var leftOffset = Math.ceil((containerWidth / 2) - (width / 2));
-					var topOffset = Math.ceil((containerHeight / 2) - (height / 2));
+					var leftOffset = 0;
+					if (width) {
+						leftOffset = Math.ceil((containerWidth / 2) - (width / 2));
+					}
+					var topOffset = 0;
+					if (height) {
+						topOffset = Math.ceil((containerHeight / 2) - (height / 2));
+					}
 					$img.css({left: leftOffset});
 					$img.css({top: topOffset});
 					if (slide.image_title){
@@ -453,7 +460,6 @@
 					if (slide.effect) {
 						effect = slide.effect;
 					}
-					$slide.appendTo($slideshow);
 					RssPrivateMethods._transitionWith($slideshow, $slide, effect);
 					return true;
 				};
@@ -462,9 +468,7 @@
 					$img, 
 					whenDimensions, 
 					(data.settings.interval * 1000) / 2,
-					function(timeout, time) {
-						alert('timeout -- limit: ' + timeout + ', time: ' + time);
-					});	
+					function() {whenDimensions(); });
 			};
 			
 			var newImg = new Image();
@@ -717,7 +721,15 @@
 		
 		_transitionWith: function($slideshow, $slide, effect) {
 			var data = $slideshow.data('rsf_slideshow'),
-				effect_iteration = 'random';
+				effect_iteration = 'random',
+				$prevSlide = $slideshow.find('.' + data.settings.slide_container_class + ':last');
+				
+			if ($prevSlide.length) {
+				$slide.insertAfter($prevSlide);
+			}
+			else {
+				$slide.prependTo($slideshow);
+			}
 				
 			if (typeof effect === 'object' && effect.iteration && effect.effects) {
 				effect_iteration = effect.iteration;
@@ -811,9 +823,9 @@
 		
 		_getImageDimensions: function($slideshow, $img, sucesss, timeout, onTimeout, time) {
 			if (!time) {
-				time = 0;	
+				time = 0;
+				$slideshow.prepend($img);
 			}
-			$slideshow.prepend($img);
 			var width = $img.outerWidth();
 			var height = $img.outerHeight();
 			if (width && height) {
@@ -841,8 +853,6 @@
 		*/
 		
 		_endTransition: function($slideshow, $slide) {
-			/*var data = $slideshow.data('rsf_slideshow');
-			$slideshow.children('div.' + data.settings.slide_container_class + ':not(:last-child)').remove();*/
 			$slide.prev().remove();
 			RssPrivateMethods._trigger($slideshow, 'rsPostTransition');
 			if ($slideshow.rsfSlideshow('currentSlideKey') === $slideshow.rsfSlideshow('totalSlides') - 1) {
