@@ -257,12 +257,14 @@
 		*/
 		
 		toggleShow: function() {
-			if (this.rsfSlideshow('isRunning')) {
-				this.rsfSlideshow('stopShow');
-			}
-			else {
-				this.rsfSlideshow('startShow');
-			}
+			return this.each(function() {
+				if ($(this).rsfSlideshow('isRunning')) {
+					$(this).rsfSlideshow('stopShow');
+				}
+				else {
+					$(this).rsfSlideshow('startShow');
+				}
+			});
 		},
 		
 		
@@ -311,40 +313,41 @@
 		*/
 		
 		getSlidesFromMarkup: function(options) {
-			var data = this.data('rsf_slideshow');
-			if (!options) {
-				options = {};
-			}
-			//	Find the containing element
-			if (!options.data_container) {
-				options.data_container = data.settings.data_container;
-			}
-			var $cntnr;
-			if (options.data_container.charAt(0) === '#') {
-				$cntnr = $(options.data_container);
-			}
-			else {
-				$cntnr = $(this).children(options.data_container);
-			}
-			if (!$cntnr.length) {
-				return false;
-			}
-			
-			if (!options.slide_data_container) {
-				options.slide_data_container = data.settings.slide_data_container;
-			}
-			var slide_data_selectors = $.extend(true, {}, data.settings.slide_data_selectors);
-			if (options.slide_data_selectors) {
-				$.extend(true, slide_data_selectors, options.slide_data_selectors);
-			}
-			options.slide_data_selectors = slide_data_selectors;
-			
-			var self = this;
-			$cntnr.children(options.slide_data_container).each(function() {
-				var slide = RssPrivateMethods._findData($(this), options.slide_data_selectors);
-				$(self).rsfSlideshow('addSlides', slide);
+			return this.each(function() {
+				var data = $(this).data('rsf_slideshow');
+				if (!options) {
+					options = {};
+				}
+				//	Find the containing element
+				if (!options.data_container) {
+					options.data_container = data.settings.data_container;
+				}
+				var $cntnr;
+				if (options.data_container.charAt(0) === '#') {
+					$cntnr = $(options.data_container);
+				}
+				else {
+					$cntnr = $(this).children(options.data_container);
+				}
+				if (!$cntnr.length) {
+					return false;
+				}
+				
+				if (!options.slide_data_container) {
+					options.slide_data_container = data.settings.slide_data_container;
+				}
+				var slide_data_selectors = $.extend(true, {}, data.settings.slide_data_selectors);
+				if (options.slide_data_selectors) {
+					$.extend(true, slide_data_selectors, options.slide_data_selectors);
+				}
+				options.slide_data_selectors = slide_data_selectors;
+				
+				var $self = $(this);
+				$cntnr.children(options.slide_data_container).each(function() {
+					var slide = RssPrivateMethods._findData($(this), options.slide_data_selectors);
+					$self.rsfSlideshow('addSlides', slide);
+				});
 			});
-			return this;
 		},
 		
 		
