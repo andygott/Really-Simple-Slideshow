@@ -213,21 +213,24 @@
 		*/
 		
 		startShow: function(interval, instant) {
-			var $slideshow = this;
-			var data = $slideshow.data('rsf_slideshow');
-			if (!data.interval_id) {
-				if (instant) {
-					$slideshow.rsfSlideshow('nextSlide');
+			return this.each(function() {
+				var $slideshow = $(this);
+				if (!$slideshow.data('rsf_slideshow').interval_id) {
+					if (instant) {
+						$slideshow.rsfSlideshow('nextSlide');
+					}
+					if (!interval) {
+						interval = $slideshow.data('rsf_slideshow').settings.interval;
+					}
+					if (interval <= $slideshow.data('rsf_slideshow').settings.transition / 1000) {
+						interval = ($slideshow.data('rsf_slideshow').settings.transition / 1000) + 0.1;
+					}
+					$slideshow.data('rsf_slideshow').interval_id = setInterval(function() {
+						$slideshow.rsfSlideshow('nextSlide'); 
+					}, interval * 1000);
+					RssPrivateMethods._trigger($slideshow, 'rsStartShow');
 				}
-				if (!interval) {
-					interval = data.settings.interval;
-				}
-				data.interval_id = setInterval(function() {
-					$slideshow.rsfSlideshow('nextSlide'); 
-				}, interval * 1000);
-				RssPrivateMethods._trigger($slideshow, 'rsStartShow');
-			}
-			return this;
+			});
 		},
 		
 		
@@ -236,13 +239,14 @@
 		*/
 		
 		stopShow: function() {
-			var data = this.data('rsf_slideshow');
-			if (data.interval_id) {
-				clearInterval(data.interval_id);
-				data.interval_id = false;
-				RssPrivateMethods._trigger(this, 'rsStopShow');
-			}
-			return this;
+			return this.each(function() {
+				var data = $(this).data('rsf_slideshow');
+				if (data.interval_id) {
+					clearInterval(data.interval_id);
+					data.interval_id = false;
+					RssPrivateMethods._trigger($(this), 'rsStopShow');
+				}
+			});
 		},
 		
 		
