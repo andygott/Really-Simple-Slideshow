@@ -16,6 +16,10 @@ http://reallysimpleworks.com/slideshow
 Change Log
 ==========
 
+Version 1.4.9 -- 23 Nov 2011
+---------------------------
+* The Slide Object now takes an optional captionClass that is added to the caption span.
+
 Version 1.4.8 -- 5 Jul 2011
 ---------------------------
 * All public methods now return a jQuery collection (unless they return specific data).
