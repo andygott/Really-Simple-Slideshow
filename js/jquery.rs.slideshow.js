@@ -1,5 +1,5 @@
 /**
-*	Really Simple™ Slideshow jQuery plug-in 1.4.8
+*	Really Simple™ Slideshow jQuery plug-in 1.4.9
 *	---------------------------------------------------------
 *	Load slideshow images dynamically, instead of all at once
 *	---------------------------------------------------------
@@ -30,7 +30,7 @@
 *
 *	var slides = Array(
 *		{url: 'http://mydomain.com/images/1.png', caption: 'This is slide number 1'},
-*		{url: 'http://mydomain.com/images/2.png', caption: 'This is slide number 2'},
+*		{url: 'http://mydomain.com/images/2.png', caption: 'This is slide number 2', captionClass: 'highlight'},
 *		{url: '/images/3.png', caption: 'This is slide number 3'},
 *	);
 *	$('#my-slideshow-div').rsfSlideshow({slides: slides});
@@ -465,6 +465,9 @@
 						var $capt = $('<div>' + slide.caption + '</div>');
 						$capt.addClass(data.settings.slide_caption_class);
 						$capt.appendTo($slide);
+						if (slide.captionClass) {
+							$capt.addClass(slide.captionClass);
+						}
 					}
 					var effect = data.settings.effect;
 					if (slide.effect) {
