@@ -16,9 +16,16 @@ http://reallysimpleworks.com/slideshow
 Change Log
 ==========
 
+<<<<<<< HEAD
 Version 1.4.9 -- 23 Nov 2011
 ---------------------------
 * The Slide Object now takes an optional captionClass that is added to the caption span.
+=======
+Version 1.4.9 -- 11 Mar 2012
+---------------------------
+* `rsSlideReady` event added.
+* Callback demo updated to provide an example of using the `rsSlideReady` event to add a custom class to an individual slide.
+>>>>>>> Add rsSlideReady event. Updated demo to provide usage example.
 
 Version 1.4.8 -- 5 Jul 2011
 ---------------------------

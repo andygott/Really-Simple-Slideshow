@@ -131,9 +131,19 @@
 }
 
 
-#callback-messages {
+#callback-messages,
+#slide-class-message {
 	margin: 48px auto;
 	width: 620px;
+}
+.slide-container.some-custom-class .slide-caption {
+	background-color: #890;
+	font-size: 3em;
+	font-style: italic;
+	font-weight: bold;
+	text-align: right;
+	top: 0;
+	width: 28%;
 }
 
 

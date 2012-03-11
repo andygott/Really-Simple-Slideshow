@@ -473,6 +473,7 @@
 					if (slide.effect) {
 						effect = slide.effect;
 					}
+					RssPrivateMethods._trigger($slideshow, 'rsSlideReady', {$slide: $slide});
 					RssPrivateMethods._transitionWith($slideshow, $slide, effect);
 					return true;
 				};
@@ -998,9 +999,9 @@
 				playPause: {
 					generate: function($slideshow) {
 						return $('<a href="#" class="rs-play-pause ' + 
-								 $slideshow.data('rsf_slideshow').settings.controls.playPause.paused_class + 
-								 '" data-control-for="' + 
-								 $slideshow.attr('id') + '">Play</a>');
+							$slideshow.data('rsf_slideshow').settings.controls.playPause.paused_class + 
+								'" data-control-for="' + 
+								$slideshow.attr('id') + '">Play</a>');
 					},
 					place: function($slideshow, $control) {
 						var $container = 
@@ -1017,7 +1018,7 @@
 				previousSlide: {
 					generate: function($slideshow) {
 						return $('<a href="#" class="rs-prev" data-control-for="' + 
-								 $slideshow.attr('id') + '">&lt;</a>');
+								$slideshow.attr('id') + '">&lt;</a>');
 					},
 					place: function($slideshow, $control) {
 						var $container = 
@@ -1033,7 +1034,7 @@
 				nextSlide: {
 					generate: function($slideshow) {
 						return $('<a href="#" class="rs-next" data-control-for="' + 
-								 $slideshow.attr('id') + '">&gt;</a>');
+								$slideshow.attr('id') + '">&gt;</a>');
 					},
 					place: function($slideshow, $control) {
 						var $container = 
