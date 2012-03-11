@@ -1,5 +1,5 @@
 /**
-*	Really Simple™ Slideshow jQuery plug-in 1.4.9
+*	Really Simple™ Slideshow jQuery plug-in 1.4.10
 *	---------------------------------------------------------
 *	Load slideshow images dynamically, instead of all at once
 *	---------------------------------------------------------
@@ -219,15 +219,11 @@
 					if (instant) {
 						$slideshow.rsfSlideshow('nextSlide');
 					}
-					if (!interval) {
-						interval = $slideshow.data('rsf_slideshow').settings.interval;
-					}
-					if (interval <= $slideshow.data('rsf_slideshow').settings.transition / 1000) {
-						interval = ($slideshow.data('rsf_slideshow').settings.transition / 1000) + 0.1;
-					}
-					$slideshow.data('rsf_slideshow').interval_id = setInterval(function() {
-						$slideshow.rsfSlideshow('nextSlide'); 
-					}, interval * 1000);
+					$slideshow.data('rsf_slideshow')._current_interval = interval;
+					RssPrivateMethods._setTimeout($slideshow, interval);
+					$('#slideshow').bind('_rsSlideReady', function(e, event_data) {
+						RssPrivateMethods._setTimeout($slideshow, interval);
+					});
 					RssPrivateMethods._trigger($slideshow, 'rsStartShow');
 				}
 			});
@@ -240,10 +236,16 @@
 		
 		stopShow: function() {
 			return this.each(function() {
-				var data = $(this).data('rsf_slideshow');
+				var $slideshow = $(this),
+					data = $slideshow.data('rsf_slideshow');
 				if (data.interval_id) {
-					clearInterval(data.interval_id);
-					data.interval_id = false;
+					$('#slideshow').unbind('_rsSlideReady', function(e, event_data) {
+						RssPrivateMethods._setTimeout($slideshow, data._current_interval);
+					});
+					if (data.interval_id) {
+						clearTimeout(data.interval_id);
+						data.interval_id = false;
+					}
 					RssPrivateMethods._trigger($(this), 'rsStopShow');
 				}
 			});
@@ -473,6 +475,7 @@
 					if (slide.effect) {
 						effect = slide.effect;
 					}
+					RssPrivateMethods._trigger($slideshow, '_rsSlideReady', {$slide: $slide});
 					RssPrivateMethods._trigger($slideshow, 'rsSlideReady', {$slide: $slide});
 					RssPrivateMethods._transitionWith($slideshow, $slide, effect);
 					return true;
@@ -927,6 +930,27 @@
 			}
 			$.extend(event_data, {slide_key: data.this_slide, slide: data.slides[data.this_slide]});
 			$slideshow.trigger(e, event_data);
+		},
+		
+		
+		/**
+		*	Set the timer for the next slide
+		*/
+		
+		_setTimeout: function($slideshow, interval) {
+			var data = $slideshow.data('rsf_slideshow');
+			if (data.interval_id) {
+				clearTimeout(data.interval_id);
+			}
+			if (!interval) {
+				interval = data.settings.interval;
+			}
+			if (interval <= data.settings.transition / 1000) {
+				interval = (data.settings.transition / 1000) + 0.1;
+			}
+			data.interval_id = setTimeout(function() {
+				$slideshow.rsfSlideshow('nextSlide'); 
+			}, interval * 1000);
 		}
 		
 	};

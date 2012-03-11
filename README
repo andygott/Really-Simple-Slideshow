@@ -16,6 +16,11 @@ http://reallysimpleworks.com/slideshow
 Change Log
 ==========
 
+Version 1.4.10 -- 11 Mar 2012
+---------------------------
+* BUG FIX: RSS now waits for the current slide to load before moving the slideshow on to the next.
+* Updated jQuery version to latest stable (1.7.1) in demos and tests.
+
 Version 1.4.9 -- 11 Mar 2012
 ---------------------------
 * `rsSlideReady` event added.
