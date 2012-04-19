@@ -16,6 +16,10 @@ http://reallysimpleworks.com/slideshow
 Change Log
 ==========
 
+Version 1.4.11 -- 19 Apr 2012
+-----------------------------
+* BUG FIX: Fixed bug where slideshow moved to the second slide and then stopped.
+
 Version 1.4.10 -- 11 Mar 2012
 ---------------------------
 * BUG FIX: RSS now waits for the current slide to load before moving the slideshow on to the next.
