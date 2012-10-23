@@ -366,16 +366,20 @@
 		nextSlide: function() {
 			return this.each(function() {
 				var data = $(this).data('rsf_slideshow');
-				data.this_slide ++;
-				if (data.this_slide >= data.slides.length) {
-					if (data.settings.loop) {
-						data.this_slide = 0;
+				if(data.settings.random !== true) {
+					data.this_slide ++;
+					if (data.this_slide >= data.slides.length) {
+						if (data.settings.loop) {
+							data.this_slide = 0;
+						}
+						else {
+							data.this_slide = data.slides.length - 1;
+							$(this).rsfSlideshow('stopShow');
+							return true;
+						}
 					}
-					else {
-						data.this_slide = data.slides.length - 1;
-						$(this).rsfSlideshow('stopShow');
-						return true;
-					}
+				} else {
+					data.this_slide = Math.floor(Math.random() * data.slides.length);
 				}
 				$(this).rsfSlideshow('showSlide', data.slides[data.this_slide]);
 			});
