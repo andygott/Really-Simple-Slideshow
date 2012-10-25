@@ -1,5 +1,5 @@
 /**
-*	Really Simple™ Slideshow jQuery plug-in 1.4.11
+*	Really Simple™ Slideshow jQuery plug-in 1.4.12
 *	---------------------------------------------------------
 *	Load slideshow images dynamically, instead of all at once
 *	---------------------------------------------------------
@@ -239,15 +239,11 @@
 				var $slideshow = $(this),
 					data = $slideshow.data('rsf_slideshow');
 				if (data.interval_id) {
-					$slideshow.unbind('_rsSlideReady', function(e, event_data) {
-						RssPrivateMethods._setTimeout($slideshow, data._current_interval);
-					});
-					if (data.interval_id) {
-						clearTimeout(data.interval_id);
-						data.interval_id = false;
-					}
-					RssPrivateMethods._trigger($(this), 'rsStopShow');
+					clearTimeout(data.interval_id);
+					data.interval_id = false;
 				}
+				$slideshow.unbind('_rsSlideReady');
+				RssPrivateMethods._trigger($(this), 'rsStopShow');
 			});
 		},
 		
@@ -264,7 +260,7 @@
 					$(this).rsfSlideshow('stopShow');
 				}
 				else {
-					$(this).rsfSlideshow('startShow');
+					$(this).rsfSlideshow('startShow', false, true);
 				}
 			});
 		},
