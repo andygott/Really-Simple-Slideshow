@@ -78,6 +78,8 @@
 						settings: settings,
 						interval_id: false,
 						loaded_imgs: [],
+						viewed_imgs: [],
+						iterations: 0,
 						queued: 0
 					});	
 					data = $slideshow.data('rsf_slideshow');
@@ -379,7 +381,24 @@
 						}
 					}
 				} else {
-					data.this_slide = Math.floor(Math.random() * data.slides.length);
+
+					if(data.iterations >= data.slides.length) {
+						data.iterations = 0;
+						data.viewed_imgs = [];
+					}
+
+					var slideDuplicate = true;
+					while(slideDuplicate === true) {
+						var nextSlideNumber = Math.floor(Math.random() * data.slides.length);
+
+						if($.inArray(nextSlideNumber, data.viewed_imgs) == -1) {
+							data.this_slide = nextSlideNumber;
+							data.viewed_imgs.push(nextSlideNumber);
+							data.iterations++;
+							slideDuplicate = false;
+						}
+					}
+
 				}
 				$(this).rsfSlideshow('showSlide', data.slides[data.this_slide]);
 			});
